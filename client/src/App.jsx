@@ -1,24 +1,31 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
+// Ensure this matches the server port
 const socket = io.connect('http://localhost:3002');
+
 
 const App = () => {
   const [message, setMessage] = useState('');
-  const [Id, setId] = useState(socket.id);
+  const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
+  const [receiverId, setReceiverId] = useState(''); // Changed to receiverId for consistency
 
+  // --- Core Socket Listeners ---
   useEffect(() => {
-
+    // 1. Get Client ID (Handshake)
     socket.on('hello', (arg) => {
       setId(arg);
       console.log('Socket ID:', arg);
     });
 
+    // 2. Listener for incoming messages
     socket.on('receive_message', (data) => {
+      // Data format expected: { Id: senderId, message: text, reciverId: targetId }
+      setMessages((prevMessages) => [...prevMessages, data]);
       console.log('Received message:', data.Id, data.message);
-      setMessages((prevMessages) => [data, ...prevMessages]);
     });
+
     return () => {
       socket.off('hello');
       socket.off('receive_message');
@@ -27,37 +34,97 @@ const App = () => {
 
   const messageEmitter = (e) => {
     e.preventDefault();
-    if (message.trim()) {
-      socket.emit('send_message', { Id, message });
-      setMessages((prevMessages) => [{ Id, message }, ...prevMessages]);
-      setMessage(''); 
+    
+    if (receiverId.trim() !== '') {
+      if (message.trim()) {
+        const newMessage = { Id: clientId, message: message.trim(), reciverId: receiverId.trim() };
+        
+        // 1. Emit the message to the server
+        socket.emit('send_message', newMessage);
+        console.log('EMIT:', newMessage);
+        
+        // 2. Optimistic update: Add the sent message to the local history
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        
+        setMessage(''); // Clear input
+      }
+    } else {
+      alert("Please enter a Receiver ID.");
     }
   };
 
+  // --- Component Rendering ---
   return (
-    <div className='w-screen h-screen flex-col flex justify-center items-center'>
-      <form onSubmit={messageEmitter} className='flex justify-center items-center'>
-        <input
-          onChange={(e) => setMessage(e.target.value)}
-          value={message} 
-          className='border outline-0 px-1'
-          type='text'
-          placeholder='Type a message...'
-        />
-        <button type='submit' className='border px-2 hover:cursor-pointer'>
-          Enter
-        </button>
-      </form>
-      <div className='mt-4 w-1/2 overflow-y-auto h-1/2'>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`p-2 my-2 rounded-lg ${msg.Id === Id ? 'bg-green-600 text-right self-end' : 'bg-blue-600 text-left self-start'}`}
-          >
-            <p className='font-bold'>{msg.Id === Id ? 'You' : `User: ${msg.Id}`}</p>
-            <p>{msg.message}</p>
-          </div>
-        ))}
+    <div className='w-screen h-screen flex justify-center items-center bg-gray-100 p-4'>
+      <div className='w-full max-w-xl h-full max-h-[700px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden'>
+        
+        {/* Header/Status */}
+        <header className='p-4 bg-gray-800 text-white shadow-md'>
+          <h1 className='text-xl font-bold'>Chat Client</h1>
+          <p className='text-sm text-gray-400'>Your ID: <span className='font-mono text-green-400'>{clientId || 'Connecting...'}</span></p>
+        </header>
+
+        {/* Message Display Area */}
+        <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
+          
+          {messages.reverse().slice().map((msg, index) => {
+            
+            const isSender = msg.Id === clientId;
+            const isPrivate = msg.reciverId && msg.reciverId !== '';
+            
+            return (
+              <div
+                key={index}
+                className={`flex ${isSender ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl text-white shadow-md ${
+                    isSender ? 'bg-indigo-600 rounded-br-sm' : 'bg-gray-600 rounded-tl-sm'
+                  }`}
+                >
+                  <p className='font-bold text-xs opacity-80 mb-1'>
+                    {isSender 
+                      ? 'You' 
+                      : `User: ${msg.Id}` 
+                    }
+                    {isPrivate && (
+                        <span className='ml-2 text-yellow-300 font-normal'>
+                           {/* Display Recipient or Private tag */}
+                        </span>
+                    )}
+                  </p>
+                  <p className='break-words text-sm'>{msg.message}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Input Form */}
+        <div className='p-4 border-t border-gray-200'>
+          <form onSubmit={messageEmitter} className='flex gap-2'>
+            <input
+              onChange={(e) => setMessage(e.target.value)}
+              value={message}
+              className='flex-grow border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition'
+              type='text'
+              placeholder='Type your message...'
+            />
+            <input
+              onChange={(e) => setReceiverId(e.target.value)}
+              value={receiverId}
+              className='w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition'
+              type="text"
+              placeholder='To ID...'
+            />
+            <button
+              type='submit'
+              className='bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 shadow-md'
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
