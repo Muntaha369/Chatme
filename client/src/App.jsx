@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import UserList from './component/UserList';
 
 const socket = io.connect('http://localhost:3002');
 
@@ -9,7 +10,8 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
-  const [receiverId, setReceiverId] = useState(''); // Changed to receiverId for consistency
+  const [receiverId, setReceiverId] = useState('');
+  
 
   
   useEffect(() => {
@@ -18,6 +20,14 @@ const App = () => {
       setId(arg);
       console.log('Socket ID:', arg);
     });
+
+    socket.on('emitall',(data)=>{
+      console.log('Ohter Socket:', data)
+    })
+
+    socket.on('disconectedUser',(data)=>{
+      console.log('disconnected sockets:', data)
+    })
 
    
     socket.on('receive_message', (data) => {
@@ -55,8 +65,9 @@ const App = () => {
 
   // --- Component Rendering ---
   return (
-    <div className='w-screen h-screen flex justify-center items-cente p-4'>
-      <div className='w-full max-w-xl h-full max-h-[700px] flex flex-col bg-gray-900 rounded-xl shadow-2xl overflow-hidden'>
+    <div className='w-screen h-screen flex justify-center items-cente'>
+      <div className='h-full flex justify-center bg-gray-900 w-[30%]'><UserList/></div>
+      <div className='w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
         
         {/* Header/Status */}
         <header className='p-4 bg-gray-800 text-white shadow-md'>

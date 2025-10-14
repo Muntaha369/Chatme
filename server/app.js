@@ -19,15 +19,19 @@ io.on("connection", (socket) => {
   console.log(`USER CONNECTED: ${socket.id}`);
   
   socket.emit("hello", socket.id);
+  socket.broadcast.emit("emitall",socket.id)
 
   socket.on("send_message", (data) => {
     console.log(`SERVER RECEIVED from ${data.Id}: ${data.message}`);
     socket.to(data.reciverId).emit("receive_message", data);
+
   });
+
 
 
   socket.on("disconnect", () => {
     console.log(`USER DISCONNECTED: ${socket.id}`);
+    socket.broadcast.emit('disconectedUser',socket.id)
   });
 });
 
