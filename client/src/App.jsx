@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList';
+import { multiSocket } from './store/store';
+import { useReciverId } from './store/store';
 
 const socket = io.connect('http://localhost:3002');
 
 
 
 const App = () => {
+
+  const { socketID } = useReciverId()
+
+  const {setSockets, removeSockets} = multiSocket();
+
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
   const [receiverId, setReceiverId] = useState('');
-  
 
+  const SocketArray = []
   
   useEffect(() => {
 
@@ -22,11 +29,15 @@ const App = () => {
     });
 
     socket.on('emitall',(data)=>{
-      console.log('Ohter Socket:', data)
+      SocketArray.push(data)
+      console.log("pushed sockets:",SocketArray)
+      setSockets(data)
     })
 
     socket.on('disconectedUser',(data)=>{
-      console.log('disconnected sockets:', data)
+      SocketArray.pop(data)
+      console.log("Popped Sockets", SocketArray)
+      removeSockets(data)
     })
 
    
@@ -45,21 +56,21 @@ const App = () => {
   const messageEmitter = (e) => {
     e.preventDefault();
     
-    if (receiverId.trim() !== '') {
+    if (socketID.trim() !== '') {
       if (message.trim()) {
-        const newMessage = { Id: clientId, message: message.trim(), reciverId: receiverId.trim() };
+        const newMessage = { Id: clientId, message: message.trim(), reciverId: socketID.trim() };
         
-        // 1. Emit the message to the server
+
         socket.emit('send_message', newMessage);
         console.log('EMIT:', newMessage);
         
-        // 2. Optimistic update: Add the sent message to the local history (must match receive logic)
+      
         setMessages((prevMessages) => [newMessage, ...prevMessages]);
         
         setMessage(''); // Clear input
       }
     } else {
-      alert("Please enter a Receiver ID.");
+      alert("Please click a Receiver");
     }
   };
 
@@ -122,8 +133,6 @@ const App = () => {
               placeholder='Type your message...'
             />
             <input
-              onChange={(e) => setReceiverId(e.target.value)}
-              value={receiverId}
               className='w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition'
               type="text"
               placeholder='To ID...'
