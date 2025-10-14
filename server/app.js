@@ -15,11 +15,14 @@ const io = new Server(server, {
   },
 });
 
-io.on("connection", (socket) => {
+io.on("connection", async(socket) => {
   console.log(`USER CONNECTED: ${socket.id}`);
+  const allSockets = await io.fetchSockets();
+  const allSocketsid = allSockets.map(s=>s.id)
+  console.log('Other sockets : ', allSocketsid)
   
   socket.emit("hello", socket.id);
-  socket.broadcast.emit("emitall",socket.id)
+  io.emit("emitall",allSocketsid)
 
   socket.on("send_message", (data) => {
     console.log(`SERVER RECEIVED from ${data.Id}: ${data.message}`);
@@ -31,7 +34,12 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log(`USER DISCONNECTED: ${socket.id}`);
-    socket.broadcast.emit('disconectedUser',socket.id)
+    setTimeout(async () => {
+            const remainingSockets = await io.fetchSockets();
+            const remainingUserIds = remainingSockets.map(s => s.id);
+            // Send the reduced list to everyone
+            io.emit("emitall", remainingUserIds);
+        }, 500)
   });
 });
 
