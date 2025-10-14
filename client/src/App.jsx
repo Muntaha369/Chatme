@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
-// Ensure this matches the server port
 const socket = io.connect('http://localhost:3002');
+
 
 
 const App = () => {
@@ -11,18 +11,18 @@ const App = () => {
   const [messages, setMessages] = useState([]);
   const [receiverId, setReceiverId] = useState(''); // Changed to receiverId for consistency
 
-  // --- Core Socket Listeners ---
+  
   useEffect(() => {
-    // 1. Get Client ID (Handshake)
+
     socket.on('hello', (arg) => {
       setId(arg);
       console.log('Socket ID:', arg);
     });
 
-    // 2. Listener for incoming messages
+   
     socket.on('receive_message', (data) => {
-      // Data format expected: { Id: senderId, message: text, reciverId: targetId }
-      setMessages((prevMessages) => [...prevMessages, data]);
+
+      setMessages((prevMessages) => [data, ...prevMessages]);
       console.log('Received message:', data.Id, data.message);
     });
 
@@ -43,8 +43,8 @@ const App = () => {
         socket.emit('send_message', newMessage);
         console.log('EMIT:', newMessage);
         
-        // 2. Optimistic update: Add the sent message to the local history
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        // 2. Optimistic update: Add the sent message to the local history (must match receive logic)
+        setMessages((prevMessages) => [newMessage, ...prevMessages]);
         
         setMessage(''); // Clear input
       }
@@ -55,8 +55,8 @@ const App = () => {
 
   // --- Component Rendering ---
   return (
-    <div className='w-screen h-screen flex justify-center items-center bg-gray-100 p-4'>
-      <div className='w-full max-w-xl h-full max-h-[700px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden'>
+    <div className='w-screen h-screen flex justify-center items-cente p-4'>
+      <div className='w-full max-w-xl h-full max-h-[700px] flex flex-col bg-gray-900 rounded-xl shadow-2xl overflow-hidden'>
         
         {/* Header/Status */}
         <header className='p-4 bg-gray-800 text-white shadow-md'>
@@ -67,8 +67,9 @@ const App = () => {
         {/* Message Display Area */}
         <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
           
-          {messages.reverse().slice().map((msg, index) => {
-            
+          
+          {messages.slice().map((msg, index) => {
+
             const isSender = msg.Id === clientId;
             const isPrivate = msg.reciverId && msg.reciverId !== '';
             
@@ -89,7 +90,6 @@ const App = () => {
                     }
                     {isPrivate && (
                         <span className='ml-2 text-yellow-300 font-normal'>
-                           {/* Display Recipient or Private tag */}
                         </span>
                     )}
                   </p>
