@@ -17,7 +17,6 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
-  const [receiverId, setReceiverId] = useState('');
 
   const SocketArray = []
   
@@ -74,6 +73,23 @@ const App = () => {
     }
   };
 
+ 
+const currentChatMessages = messages
+  .filter(msg => {
+    
+    const currentRecipient = socketID;
+
+    
+    const isSentToCurrent = msg.Id === clientId && msg.reciverId === currentRecipient;
+
+    
+    const isReceivedFromCurrent = msg.Id === currentRecipient && msg.reciverId === clientId;
+
+    
+    return isSentToCurrent || isReceivedFromCurrent;
+  })
+  .slice()
+
   // --- Component Rendering ---
   return (
     <div className='w-screen h-screen flex justify-center items-cente'>
@@ -89,8 +105,7 @@ const App = () => {
         {/* Message Display Area */}
         <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
           
-          
-          {messages.slice().map((msg, index) => {
+          {currentChatMessages.map((msg, index) => {
 
             const isSender = msg.Id === clientId;
             const isPrivate = msg.reciverId && msg.reciverId !== '';
@@ -115,7 +130,7 @@ const App = () => {
                         </span>
                     )}
                   </p>
-                  <p className='break-words text-sm'>{msg.message}</p>
+                  <p className='break-words text-sm'>{msg.message}</p>              
                 </div>
               </div>
             );
