@@ -26,8 +26,12 @@ io.on("connection", async(socket) => {
 
   socket.on("send_message", (data) => {
     console.log(`SERVER RECEIVED from ${data.Id}: ${data.message}`);
-    socket.to(data.reciverId).emit("receive_message", data);
-
+    let ID = data.reciverId;
+    if(ID.includes('+room')){
+      console.log('ITS A ROOM ID', ID)
+    }
+    else{
+    socket.to(data.reciverId).emit("receive_message", data);}
   });
 
 

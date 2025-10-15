@@ -17,3 +17,5 @@ export const useReciverId = create((set)=>({
   socketID:'',
   setSocketID:(socket)=>set(()=>({socketID:socket}))
 }))
+
+
