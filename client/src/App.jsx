@@ -18,6 +18,7 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
+  const [newUserId, setNewUserId] = useState('')
 
   const SocketArray = []
   
@@ -91,6 +92,12 @@ const currentChatMessages = messages
   })
   .slice()
 
+  const handleNewuserSubmit = (e)=>{
+    e.preventDefault()
+    const data = {senderID:newUserId.trim(),roomName:socketID.trim()}
+    socket.emit('room_req',data)
+  }
+
   // --- Component Rendering ---
   return (
     <div className='w-screen h-screen flex justify-center items-cente'>
@@ -107,11 +114,11 @@ const currentChatMessages = messages
             
             {/* --- NEW: Add User to Room Functionality --- */}
             {socketID && socketID.includes("+room") && (
-              <form className='flex items-center gap-2'>
+              <form onSubmit={handleNewuserSubmit} className='flex items-center gap-2'>
                 <input
                   type="text"
-                  // value={newUserId}
-                  // onChange={(e) => setNewUserId(e.target.value)}
+                  value={newUserId}
+                  onChange={(e) => setNewUserId(e.target.value)}
                   placeholder="User ID to Invite"
                   className='px-3 py-1 border border-gray-600 rounded-lg text-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500 outline-none transition w-40'
                 />

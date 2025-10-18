@@ -16,7 +16,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", async(socket) => {
-  console.log(`USER CONNECTED: ${socket.id}`);
+  // console.log(`USER CONNECTED: ${socket.id}`);
   const allSockets = await io.fetchSockets();
   const allSocketsid = allSockets.map(s=>s.id)
   console.log('Other sockets : ', allSocketsid)
@@ -37,10 +37,14 @@ io.on("connection", async(socket) => {
     socket.to(data.reciverId).emit("receive_message", data);}
   });
 
+  socket.on("room_req",(data)=>{
+    console.log("request to join room",data)
 
+    socket.emit("room_invitation",data)
+  })
 
   socket.on("disconnect", () => {
-    console.log(`USER DISCONNECTED: ${socket.id}`);
+    // console.log(`USER DISCONNECTED: ${socket.id}`);
     setTimeout(async () => {
             const remainingSockets = await io.fetchSockets();
             const remainingUserIds = remainingSockets.map(s => s.id);

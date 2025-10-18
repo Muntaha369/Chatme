@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io-client'
 import { create } from 'zustand'
 
 export const multiSocket = create((set) => ({
