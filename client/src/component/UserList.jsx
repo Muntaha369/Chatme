@@ -19,7 +19,8 @@ const UserList = () => {
         return;
     }
     const roomIdentifier = newRoomName+"+"+"room"
-    setRoomList((prev)=>[newRoomName, ...prev])
+    console.log("fromUser",roomIdentifier)
+    setRoomList((prev)=>[roomIdentifier, ...prev])
     console.log(`Creating/Switching to Room: ${newRoomName.trim()}`);
     setSocketID(roomIdentifier.trim())
     setNewRoomName('');
@@ -54,7 +55,9 @@ const UserList = () => {
       {
         RoomList.map((val, idx)=>(
           <div
-          onClick={() => setSocketID(val)}
+          onClick={() => {
+            setSocketID(val)       
+          }} // THIS LINE IS THE ERROR RESOLVE TOMMORW
           key = {idx}
           className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
           ${isRoomActive(val) ? 'bg-indigo-600' : 'bg-gray-800 hover:bg-gray-700'}`}

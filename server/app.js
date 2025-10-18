@@ -28,9 +28,12 @@ io.on("connection", async(socket) => {
     console.log(`SERVER RECEIVED from ${data.Id}: ${data.message}`);
     let ID = data.reciverId;
     if(ID.includes('+room')){
-      console.log('ITS A ROOM ID', ID)
+      socket.join(data.reciverId)
+      console.log("going throung")
+      socket.to(data.reciverId).emit("room_receive_message",data)
     }
     else{
+      console.log("-room")
     socket.to(data.reciverId).emit("receive_message", data);}
   });
 

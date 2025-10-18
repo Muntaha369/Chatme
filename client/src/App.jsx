@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import UserList from './component/UserList';
 import { multiSocket } from './store/store';
 import { useReciverId } from './store/store';
+import { UserPlus } from 'lucide-react'; 
 
 const socket = io.connect('http://localhost:3002');
 
@@ -98,8 +99,33 @@ const currentChatMessages = messages
         
         {/* Header/Status */}
         <header className='p-4 bg-gray-800 text-white shadow-md'>
-          <h1 className='text-xl font-bold'>Chat Client</h1>
-          <p className='text-sm text-gray-400'>Your ID: <span className='font-mono text-green-400'>{clientId || 'Connecting...'}</span></p>
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col">
+              <h1 className='text-xl font-bold'>Chat Client</h1>
+              <p className='text-sm text-gray-400'>Your ID: <span className='font-mono text-green-400'>{clientId || 'Connecting...'}</span></p>
+            </div>
+            
+            {/* --- NEW: Add User to Room Functionality --- */}
+            {socketID && socketID.includes("+room") && (
+              <form className='flex items-center gap-2'>
+                <input
+                  type="text"
+                  // value={newUserId}
+                  // onChange={(e) => setNewUserId(e.target.value)}
+                  placeholder="User ID to Invite"
+                  className='px-3 py-1 border border-gray-600 rounded-lg text-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500 outline-none transition w-40'
+                />
+                <button
+                  type='submit'
+                  className='bg-indigo-600 text-white p-1 rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md flex items-center'
+                >
+                  <UserPlus size={18} />
+                </button>
+              </form>
+            )}
+            {/* --- END NEW --- */}
+
+          </div>
         </header>
 
         {/* Message Display Area */}
