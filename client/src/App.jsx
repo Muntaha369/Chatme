@@ -4,6 +4,7 @@ import UserList from './component/UserList';
 import { multiSocket } from './store/store';
 import { useReciverId } from './store/store';
 import { UserPlus } from 'lucide-react'; 
+import { useDataroom } from './store/store';
 
 const socket = io.connect('http://localhost:3002');
 
@@ -14,6 +15,7 @@ const App = () => {
   const { socketID } = useReciverId()
 
   const {setSockets, removeSockets} = multiSocket();
+  const { setDataRoom } = useDataroom()
 
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
@@ -47,6 +49,12 @@ const App = () => {
       setMessages((prevMessages) => [data, ...prevMessages]);
       console.log('Received message:', data.Id, data.message);
     });
+
+    socket.on('room_invitation',(data)=>{
+      console.log("From invitation",data)
+      setDataRoom(data.roomName)
+
+    })
 
     return () => {
       socket.off('hello');
@@ -94,7 +102,7 @@ const currentChatMessages = messages
 
   const handleNewuserSubmit = (e)=>{
     e.preventDefault()
-    const data = {senderID:newUserId.trim(),roomName:socketID.trim()}
+    const data = {reciverId:newUserId.trim(),roomName:socketID.trim()}
     socket.emit('room_req',data)
   }
 
@@ -140,7 +148,7 @@ const currentChatMessages = messages
           
           {currentChatMessages.map((msg, index) => {
 
-            const isSender = msg.Id === clientId;
+            const isSender = msg.Id === clientId ;
             const isPrivate = msg.reciverId && msg.reciverId !== '';
             
             return (

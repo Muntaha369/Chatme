@@ -40,7 +40,7 @@ io.on("connection", async(socket) => {
   socket.on("room_req",(data)=>{
     console.log("request to join room",data)
 
-    socket.emit("room_invitation",data)
+    socket.to(data.reciverId).emit("room_invitation",data)
   })
 
   socket.on("disconnect", () => {

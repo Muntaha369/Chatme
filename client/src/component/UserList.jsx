@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { multiSocket } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
-import { useReciverId } from '../store/store'; // FIX: Adjusted path
+import { useReciverId } from '../store/store'; 
 import { Zap, PlusCircle } from 'lucide-react'; 
+import { useDataroom } from '../store/store';
 
 const UserList = () => {
   const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
   const [RoomList, setRoomList] = useState([])
+  const {dataRoom} = useDataroom()
   
   // Log the current active user ID for debugging
   console.log("Current recipient:", socketID);
+  console.log("debug sockets",Sockets)
+
+  // console.log("dataroom",dataRoom)
+  useEffect(() => {
+    if (dataRoom && dataRoom.length > 0) {
+        // Use the store's data to initialize the local room list
+        setRoomList(dataRoom); 
+    }
+  }, [dataRoom]); 
 
   const handleCreateRoom = (e) => {
     e.preventDefault();
@@ -57,7 +68,7 @@ const UserList = () => {
           <div
           onClick={() => {
             setSocketID(val)       
-          }} // THIS LINE IS THE ERROR RESOLVE TOMMORW
+          }}
           key = {idx}
           className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
           ${isRoomActive(val) ? 'bg-indigo-600' : 'bg-gray-800 hover:bg-gray-700'}`}
