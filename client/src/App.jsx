@@ -1,128 +1,126 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import UserList from './component/UserList';
-import { multiSocket } from './store/store';
-import { useReciverId } from './store/store';
+import UserList from './component/UserList'; 
+import { multiSocket } from './store/store'; 
+import { useReciverId } from './store/store'; 
+import { useDataroom } from './store/store'; 
 import { UserPlus } from 'lucide-react'; 
-import { useDataroom } from './store/store';
 
+// The socket connection should be established outside the component
 const socket = io.connect('http://localhost:3002');
-
 
 
 const App = () => {
 
-  const { socketID } = useReciverId()
-
-  const {setSockets, removeSockets} = multiSocket();
+  const { socketID } = useReciverId() 
   const { setDataRoom } = useDataroom()
+  const { setSockets } = multiSocket();
 
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
-  const [newUserId, setNewUserId] = useState('')
+  const [newUserId, setNewUserId] = useState('');
+  const [receiverIdInput, setReceiverIdInput] = useState('');
 
-  const SocketArray = []
   
   useEffect(() => {
 
     socket.on('hello', (arg) => {
       setId(arg);
-      console.log('Socket ID:', arg);
     });
 
-    socket.on('emitall',(data)=>{
-      SocketArray.push(data)
-      console.log("pushed sockets:",SocketArray)
-      setSockets(data)
+    socket.on('emitall', (data) => {
+      setSockets(data);
     })
 
-    socket.on('disconectedUser',(data)=>{
-      SocketArray.pop(data)
-      console.log("Popped Sockets", SocketArray)
-      removeSockets(data)
-    })
-
-   
-    socket.on('receive_message', (data) => {
-
+    const receiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log('Received message:', data);
-    });
+      console.log('Received message:', data.message);
+    };
 
-    socket.on('room_receive_message',(data)=>{
+    const roomReceiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log("room message", data);
-    })
+      console.log("Received room message:", data.message);
+    };
 
-    socket.on('room_invitation',(data)=>{
-      console.log("From invitation",data)
-      socket.emit("join_room",data.roomName)
-      setDataRoom(data.roomName)
+    socket.on('receive_message', receiveMessageHandler);
+    socket.on('room_receive_message', roomReceiveMessageHandler); 
+
+    socket.on('room_invitation', (data) => {
+      console.log("From invitation", data);
+      socket.emit("join_room", data.roomName); 
+      setDataRoom(data.roomName); 
     })
 
     return () => {
       socket.off('hello');
       socket.off('emitall');
-      socket.off('receive_message');
-      socket.off('room_receive_message'); // FIX: Add cleanup for room listener
+      socket.off('receive_message', receiveMessageHandler);
+      socket.off('room_receive_message', roomReceiveMessageHandler); 
       socket.off('room_invitation');
     };
-  }, []);
+  }, [setSockets, setDataRoom]); 
 
   const messageEmitter = (e) => {
     e.preventDefault();
     
-    if (socketID.trim() !== '') {
-      if (message.trim()) {
-        const newMessage = { Id: clientId, message: message.trim(), reciverId: socketID.trim() };
-        
+    const currentRecipient = socketID; 
 
+    if (currentRecipient && currentRecipient.trim() !== '') {
+      if (message.trim()) {
+        const newMessage = { Id: clientId, message: message.trim(), reciverId: currentRecipient.trim() };
+        
         socket.emit('send_message', newMessage);
         console.log('EMIT:', newMessage);
         
-      
-        setMessages((prevMessages) => [newMessage, ...prevMessages]);
-        
-        setMessage(''); // Clear input
+        if(currentRecipient.includes('+room')){
+          setMessages((prevMessages)=>[...prevMessages])
+        }
+        else{
+          setMessages((prevMessages) => [newMessage, ...prevMessages]);
+          setMessage('');} 
       }
     } else {
-      alert("Please click a Receiver");
+      alert("Please select a user or chat room to send a message.");
     }
   };
 
- 
-const currentChatMessages = messages
-  .filter(msg => {
+  const handleNewuserSubmit = (e) => {
+    e.preventDefault();
+    const data = { reciverId: newUserId.trim(), roomName: socketID.trim(), senderId: clientId }; 
     
-    const currentRecipient = socketID;
+    if (!socketID.includes("+room")) {
+        alert("Please select a valid chat room before inviting a user.");
+        return;
+    }
+    socket.emit('room_req', data);
+    setNewUserId('');
+  };
 
-    
-    const isSentToCurrent = msg.Id === clientId && msg.reciverId === currentRecipient;
-    // console.log("recipient",currentRecipient)
 
-    
-    const isReceivedFromCurrent = msg.Id === currentRecipient && msg.reciverId === clientId;
+  const currentChatMessages = messages
+    .filter(msg => {
+      const currentRecipient = socketID;
+
+      const isMyMessageToTarget = msg.Id === clientId && msg.reciverId === currentRecipient;
+      const isMessageFromTarget = msg.Id === currentRecipient && msg.reciverId === clientId;
+      const isRoomMessageToCurrentRoom = msg.reciverId === currentRecipient; 
+
+      if (currentRecipient && currentRecipient.includes('+room')) {
+          return isRoomMessageToCurrentRoom;
+      }
+      
+      return isMyMessageToTarget || isMessageFromTarget;
+    })
+    .slice() // Create a copy
 
 
-    
-    return isSentToCurrent || isReceivedFromCurrent;
-  })
-  .slice()
 
-  const handleNewuserSubmit = (e)=>{
-    e.preventDefault()
-    const data = {senderID: clientId ,reciverId:newUserId.trim(),roomName:socketID.trim()}
-    socket.emit('room_req',data)
-  }
-
-  // --- Component Rendering ---
   return (
-    <div className='w-screen h-screen flex justify-center items-cente'>
+    <div className='w-screen h-screen flex justify-center items-center'>
       <div className='h-full flex justify-center bg-gray-900 w-[30%]'><UserList/></div>
       <div className='w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
         
-        {/* Header/Status */}
         <header className='p-4 bg-gray-800 text-white shadow-md'>
           <div className="flex justify-between items-center">
             <div className="flex flex-col">
@@ -130,8 +128,7 @@ const currentChatMessages = messages
               <p className='text-sm text-gray-400'>Your ID: <span className='font-mono text-green-400'>{clientId || 'Connecting...'}</span></p>
             </div>
             
-            {/* --- NEW: Add User to Room Functionality --- */}
-            {socketID && socketID.includes("+room") && (
+            {socketID && (socketID.includes("+room") || socketID.includes("room")) && (
               <form onSubmit={handleNewuserSubmit} className='flex items-center gap-2'>
                 <input
                   type="text"
@@ -148,7 +145,6 @@ const currentChatMessages = messages
                 </button>
               </form>
             )}
-            {/* --- END NEW --- */}
 
           </div>
         </header>
@@ -156,10 +152,11 @@ const currentChatMessages = messages
         {/* Message Display Area */}
         <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
           
+          
           {currentChatMessages.map((msg, index) => {
 
-            const isSender = msg.Id === clientId ;
-            const isPrivate = msg.reciverId && msg.reciverId !== '';
+            const isSender = msg.Id === clientId;
+            const isRoom = msg.reciverId && (msg.reciverId.includes("+room") || msg.reciverId.includes("room"));
             
             return (
               <div
@@ -172,16 +169,15 @@ const currentChatMessages = messages
                   }`}
                 >
                   <p className='font-bold text-xs opacity-80 mb-1'>
-                    {isSender 
-                      ? 'You' 
-                      : `User: ${msg.Id}` 
-                    }
-                    {isPrivate && (
+                    {/* Display sender's ID, and note if it's a room */}
+                    {isSender ? 'You' : `User: ${msg.Id}`} 
+                    {isRoom && (
                         <span className='ml-2 text-yellow-300 font-normal'>
+                            (Room)
                         </span>
                     )}
                   </p>
-                  <p className='break-words text-sm'>{msg.message}</p>              
+                  <p className='break-words text-sm'>{msg.message}</p> 
                 </div>
               </div>
             );
@@ -198,16 +194,12 @@ const currentChatMessages = messages
               type='text'
               placeholder='Type your message...'
             />
-            <input
-              className='w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none transition'
-              type="text"
-              placeholder='To ID...'
-            />
+            {/* The recipient ID is now SELECTED from the UserList (socketID) */}
             <button
               type='submit'
               className='bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 shadow-md'
             >
-              Send
+              Send to {socketID ? socketID.substring(0, 8) + '...' : 'Global'}
             </button>
           </form>
         </div>
