@@ -47,18 +47,26 @@ const App = () => {
     socket.on('receive_message', (data) => {
 
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log('Received message:', data.Id, data.message);
+      console.log('Received message:', data);
     });
+
+    socket.on('room_receive_message',(data)=>{
+      setMessages((prevMessages) => [data, ...prevMessages]);
+      console.log("room message", data);
+    })
 
     socket.on('room_invitation',(data)=>{
       console.log("From invitation",data)
+      socket.emit("join_room",data.roomName)
       setDataRoom(data.roomName)
-
     })
 
     return () => {
       socket.off('hello');
+      socket.off('emitall');
       socket.off('receive_message');
+      socket.off('room_receive_message'); // FIX: Add cleanup for room listener
+      socket.off('room_invitation');
     };
   }, []);
 
@@ -91,9 +99,11 @@ const currentChatMessages = messages
 
     
     const isSentToCurrent = msg.Id === clientId && msg.reciverId === currentRecipient;
+    // console.log("recipient",currentRecipient)
 
     
     const isReceivedFromCurrent = msg.Id === currentRecipient && msg.reciverId === clientId;
+
 
     
     return isSentToCurrent || isReceivedFromCurrent;
@@ -102,7 +112,7 @@ const currentChatMessages = messages
 
   const handleNewuserSubmit = (e)=>{
     e.preventDefault()
-    const data = {reciverId:newUserId.trim(),roomName:socketID.trim()}
+    const data = {senderID: clientId ,reciverId:newUserId.trim(),roomName:socketID.trim()}
     socket.emit('room_req',data)
   }
 

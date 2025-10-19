@@ -25,12 +25,11 @@ io.on("connection", async(socket) => {
   io.emit("emitall",allSocketsid)
 
   socket.on("send_message", (data) => {
-    console.log(`SERVER RECEIVED from ${data.Id}: ${data.message}`);
+    console.log(`SERVER RECEIVED from`,data);
     let ID = data.reciverId;
     if(ID.includes('+room')){
-      socket.join(data.reciverId)
-      console.log("going throung")
-      socket.to(data.reciverId).emit("room_receive_message",data)
+      console.log("going throung",data.reciverId)
+      io.to(data.reciverId).emit("room_receive_message",data)
     }
     else{
       console.log("-room")
@@ -39,8 +38,13 @@ io.on("connection", async(socket) => {
 
   socket.on("room_req",(data)=>{
     console.log("request to join room",data)
-
+    // console.log(socket.id)
+    socket.join(data.roomName)
     socket.to(data.reciverId).emit("room_invitation",data)
+  })
+
+  socket.on("join_room",(data)=>{
+    socket.join(data)
   })
 
   socket.on("disconnect", () => {

@@ -12,8 +12,8 @@ const UserList = () => {
   const {dataRoom} = useDataroom()
   
   // Log the current active user ID for debugging
-  console.log("Current recipient:", socketID);
-  console.log("debug sockets",Sockets)
+  // console.log("Current recipient:", socketID);
+  // console.log("debug sockets",Sockets)
 
   // console.log("dataroom",dataRoom)
   useEffect(() => {
