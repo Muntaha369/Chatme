@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // Simple SVG for the ChatMe logo (Can be replaced with an actual image if needed)
 const ChatMeLogo = () => (
@@ -18,6 +19,7 @@ function SignupPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate()
 
     const handleSignup = (e) => {
         e.preventDefault();
@@ -48,6 +50,7 @@ function SignupPage() {
             setUsername('');
             setEmail('');
             setPassword('');
+            navigate('/login')
         }, 1000); // Simulate network delay
     };
 

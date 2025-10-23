@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Import axios for API call
+import { useNavigate } from 'react-router-dom';
 
 // Simple SVG for the ChatMe logo (Can be replaced with an actual image if needed)
 const ChatMeLogo = () => (
@@ -17,6 +18,7 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(''); // State to hold login error messages
+    const navigate = useNavigate()
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -36,7 +38,8 @@ function LoginPage() {
             
             // 2. Redirect to the chat page or dashboard
             // Example using window.location (replace with Next.js router if needed)
-            window.location.href = '/chat'; // Or your chat application's main page
+
+            navigate('/')
 
         } catch (err) {
             console.error('Login failed:', err.response?.data?.msg || err.message);
