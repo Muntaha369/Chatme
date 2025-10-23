@@ -39,7 +39,7 @@ function LoginPage() {
             // 2. Redirect to the chat page or dashboard
             // Example using window.location (replace with Next.js router if needed)
 
-            navigate('/')
+            navigate('/loading')
 
         } catch (err) {
             console.error('Login failed:', err.response?.data?.msg || err.message);
