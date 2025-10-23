@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 // Simple SVG for the ChatMe logo (Can be replaced with an actual image if needed)
 const ChatMeLogo = () => (
@@ -15,28 +16,29 @@ function SignupPage() {
     // State for all required sign-up fields
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [phone_no, setPhoneNo] = useState(''); // Underscore matches server expectation
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSignup = (e) => {
         e.preventDefault();
         setIsLoading(true);
-        const signupData = { username, email, phone_no, password };
+        const contacts = [];
+        const rooms = [];
+        const signupData = { username, email, password, contacts, rooms };
         console.log('Attempting signup with:', signupData);
         
         // --- Integrate your API call to '/api/auth/register' here ---
         // Example using axios:
-        // axios.post('/api/auth/register', signupData)
-        //   .then(response => {
-        //     console.log('Signup successful:', response.data);
-        //     // Handle token storage and redirection to login or chat page
-        //   })
-        //   .catch(error => {
-        //     console.error('Signup failed:', error.response?.data?.msg || error.message);
-        //     // Display error message to the user
-        //   })
-        //   .finally(() => setIsLoading(false));
+        axios.post('http://localhost:3002/api/auth/register', signupData)
+          .then(response => {
+            console.log('Signup successful:', response.data);
+            // Handle token storage and redirection to login or chat page
+          })
+          .catch(error => {
+            console.error('Signup failed:', error.response?.data?.msg || error.message);
+            // Display error message to the user
+          })
+          .finally(() => setIsLoading(false));
 
         // Placeholder for demonstration
         setTimeout(() => {
@@ -45,7 +47,6 @@ function SignupPage() {
             // Reset form fields after simulated attempt
             setUsername('');
             setEmail('');
-            setPhoneNo('');
             setPassword('');
         }, 1000); // Simulate network delay
     };
@@ -97,20 +98,6 @@ function SignupPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
                                 placeholder="you@example.com"
-                            />
-                        </div>
-
-                        {/* Phone Number Input */}
-                        <div>
-                            <label htmlFor="phone_no" className="block text-sm font-medium text-gray-400 mb-1">Phone Number</label>
-                            <input
-                                id="phone_no"
-                                name="phone_no"
-                                type="tel" // Use 'tel' type for phone numbers
-                                value={phone_no}
-                                onChange={(e) => setPhoneNo(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-700 rounded-lg bg-gray-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150"
-                                placeholder="Your phone number (optional)"
                             />
                         </div>
 
