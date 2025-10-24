@@ -29,12 +29,15 @@ const App = () => {
   
   useEffect(() => {
 
+    // this is token verification logic
     const checkAuth = async()=>{
       const res = await verifyToken()
 
-      if(res && res.succes){
+      if(res && res.success){
         console.log("hip hip hoorray !!")
       }else{
+        console.log(res.success)
+        console.log(res.message)
         localStorage.removeItem('authToken');
         navigate('/login')
       }
