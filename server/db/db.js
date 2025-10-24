@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const URI = "mongodb://127.0.0.1:27017/socket";
+const {URI} = require('../keys/keys')
 
 const ConnectDb = async()=>{
   try {

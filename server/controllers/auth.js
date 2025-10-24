@@ -1,8 +1,7 @@
 const User = require('../models/model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET_KEY = 'MY_SECRET_KEY'; 
-
+const {JWT_SECRET_KEY} = require('../keys/keys')
 const register = async (req, res) => {
     try {
         const { username, email, password, contacts, rooms } = req.body;
@@ -87,4 +86,43 @@ const login = async(req,res)=>{
  }
 }
 
-module.exports = { register, login }
+const verify = (req, res) => {
+
+    const { token } = req.body;
+
+
+    if (!token) {
+        return res.status(400).json({ success: false, message: 'Token is required in the request body.' });
+    }
+
+    try {
+
+        const decodedPayload = jwt.verify(token, JWT_SECRET_KEY);
+
+
+        console.log("Token Verified Successfully:", decodedPayload);
+        return res.status(200).json({
+            success: true,
+            message: decodedPayload.email,
+
+        });
+
+    } catch (error) {
+
+        console.error("Token Verification Failed:", error.message);
+
+        if (error instanceof jwt.TokenExpiredError) {
+
+            return res.status(401).json({ success: false, message: "Token has expired. Please log in again." });
+        } else if (error instanceof jwt.JsonWebTokenError) {
+
+            return res.status(403).json({ success: false, message: "Token is invalid." });
+        } else {
+
+            return res.status(500).json({ success: false, message: "Internal server error during token verification." });
+        }
+    }
+};
+
+
+module.exports = { register, login, verify }
