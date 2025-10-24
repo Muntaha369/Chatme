@@ -5,12 +5,16 @@ import { multiSocket } from './store/store';
 import { useReciverId } from './store/store'; 
 import { useDataroom } from './store/store'; 
 import { UserPlus } from 'lucide-react'; 
+import { verifyToken } from './component/verify';
+import { useNavigate } from 'react-router-dom';
 
 // The socket connection should be established outside the component
 const socket = io.connect('http://localhost:3002');
 
 
 const App = () => {
+
+  const navigate = useNavigate()
 
   const { socketID } = useReciverId() 
   const { setDataRoom } = useDataroom()
@@ -24,6 +28,19 @@ const App = () => {
 
   
   useEffect(() => {
+
+    const checkAuth = async()=>{
+      const res = await verifyToken()
+
+      if(res && res.succes){
+        console.log("hip hip hoorray !!")
+      }else{
+        localStorage.removeItem('authToken');
+        navigate('/login')
+      }
+    }
+
+    checkAuth()
 
     socket.on('hello', (arg) => {
       setId(arg);
