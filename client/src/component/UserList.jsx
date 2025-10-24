@@ -3,8 +3,12 @@ import { multiSocket } from '../store/store'; // FIX: Adjusted path to assume st
 import { useReciverId } from '../store/store'; 
 import { Zap, PlusCircle } from 'lucide-react'; 
 import { useDataroom } from '../store/store';
+import { useUserID } from '../store/store';
+import { useUser } from '../store/store';
 
 const UserList = () => {
+  const { user } = useUser()
+  const { userID } = useUserID()
   const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
@@ -103,7 +107,8 @@ const UserList = () => {
             <div className='flex items-center'>
                 <Zap className='text-yellow-400 mr-3' size={20} />
                 <p className='text-white font-medium truncate'>
-                    User: {val.substring(0, 8)}...
+                  {userID === val ? `User: ${user}`: `User: ${val.substring(0, 8)}...`}
+                    {/* User: {val.substring(0, 8)}... */}
                 </p>
             </div>
             <span className='text-green-400 text-xs font-mono'>ONLINE</span>

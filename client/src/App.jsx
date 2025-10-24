@@ -7,6 +7,8 @@ import { useDataroom } from './store/store';
 import { UserPlus } from 'lucide-react'; 
 import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from './store/store';
+import { useUserID } from './store/store';
 
 // The socket connection should be established outside the component
 const socket = io.connect('http://localhost:3002');
@@ -14,11 +16,13 @@ const socket = io.connect('http://localhost:3002');
 
 const App = () => {
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { socketID } = useReciverId() 
-  const { setDataRoom } = useDataroom()
+  const { setUser } = useUser();
+  const { socketID } = useReciverId(); 
+  const { setDataRoom } = useDataroom();
   const { setSockets } = multiSocket();
+  const { setUserID } = useUserID();
 
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
@@ -35,6 +39,7 @@ const App = () => {
 
       if(res && res.success){
         console.log("hip hip hoorray !!")
+        setUser(res.message)
       }else{
         console.log(res.success)
         console.log(res.message)
@@ -47,6 +52,7 @@ const App = () => {
 
     socket.on('hello', (arg) => {
       setId(arg);
+      setUserID(arg)
     });
 
     socket.on('emitall', (data) => {
@@ -138,7 +144,7 @@ const App = () => {
 
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
-      <div className='h-full flex justify-center bg-gray-900 w-[30%]'><UserList/></div>
+      <div className='h-full flex justify-center bg-gray-900 md:w-[40%] lg:w-[30%]'><UserList/></div>
       <div className='w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
         
         <header className='p-4 bg-gray-800 text-white shadow-md'>

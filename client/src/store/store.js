@@ -19,3 +19,12 @@ export const useDataroom = create((set)=>({
   // setDataroom: (socket) => set((state) => ({ dataRoom: [socket, ...state.dataRoom] }))
 }))
 
+export const useUser = create((set)=>({
+  user:"",
+  setUser:(user) => set(() => ({user}))
+}))
+
+export const useUserID = create((set)=>({
+  userID:"",
+  setUserID:(userID) => set(() => ({userID}))
+}))
