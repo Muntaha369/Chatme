@@ -144,8 +144,8 @@ const App = () => {
 
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
-      <div className='h-full flex justify-center bg-gray-900 md:w-[40%] lg:w-[30%]'><UserList/></div>
-      <div className='w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
+      <div className='h-full flex justify-center bg-gray-900 sm: w-[100%] md:w-[40%] lg:w-[30%]'><UserList/></div>
+      <div className=' sm: w-[0%] md:w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
         
         <header className='p-4 bg-gray-800 text-white shadow-md'>
           <div className="flex justify-between items-center">
