@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useToggler } from '../store/store';
 
 // Define the type for the props if using TypeScript
 // interface ToggleButtonProps {
@@ -10,10 +11,11 @@ import { motion } from 'framer-motion';
 
 const ToggleButton = ({ label = "Toggle", initialState = false, onChange }) => {
   const [isOn, setIsOn] = useState(initialState);
-
+  const { setToggler } = useToggler()
   const toggleSwitch = () => {
     const newState = !isOn;
     setIsOn(newState);
+    setToggler(newState)
     if (onChange) {
       onChange(newState); // Notify parent component of the change
     }

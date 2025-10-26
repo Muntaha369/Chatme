@@ -5,10 +5,12 @@ import { Zap, PlusCircle } from 'lucide-react';
 import { useDataroom } from '../store/store';
 import { useUserID } from '../store/store';
 import { useUser } from '../store/store';
-import {motion, AnimatePresence} from 'framer-motion'
+import {motion} from 'framer-motion'
 import ToggleButton from './ToggleButton';
+import { useToggler } from '../store/store';
  
 const UserList = () => {
+  const { toggler } = useToggler()
   const { user } = useUser()
   const { userID } = useUserID()
   const { Sockets } = multiSocket(); 
@@ -119,15 +121,51 @@ const modalVariants = {
                         exit="hidden">
 
             <motion.div
-              className="bg-gray-900 border-2 border-gray-700 rounded-xl shadow-2xl p-6 max-w-2xl h-[35%] w-full relative"
+              className={`bg-gray-900 border-2 border-gray-700 rounded-xl shadow-2xl p-6 max-w-2xl
+                 ${toggler === true ?`h-[50%]`:`h-[40%]`} w-full relative`}
                             variants={modalVariants}
                             initial="hidden"
                             animate="visible"
                             exit="exit">
                               <p className='text-lg font-bold'>Create Chat</p>
-                              <div className='mt-3'>
+                              <div 
+                              className='mt-3'
+                              >
                                 <ToggleButton/>
                               </div>
+
+                              {
+                                !toggler && (
+                                <div className=' flex justify-center items-center flex-col' >
+                                  <input placeholder='Enter a Chat...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
+                                  <div className='w-full'>
+                                    <button className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
+                                    <button 
+                                      className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
+                                                hover:cursor-pointer hover:bg-indigo-700/95 
+                                                transition-all duration-150 ease-in-out'>
+                                      Create</button>
+                                  </div>
+                                </div>
+                              )
+                              }
+
+                              {
+                                toggler && (
+                                  <div className=' flex justify-center items-center flex-col' >
+                                  <input placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
+                                  <input placeholder='Enter participants...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt mb-4' type="text" />
+                                  <div className='w-full'>
+                                    <button className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
+                                    <button 
+                                      className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
+                                                hover:cursor-pointer hover:bg-indigo-700/95 
+                                                transition-all duration-150 ease-in-out'>
+                                      Create</button>
+                                  </div>
+                                </div>
+                                )
+                              }
             </motion.div>
 
           </motion.div>
