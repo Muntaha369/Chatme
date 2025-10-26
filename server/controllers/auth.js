@@ -7,7 +7,7 @@ const register = async (req, res) => {
         const { username, email, password, contacts, rooms } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ msg: "Email and password are required." });
+            return res.status(400).json({ msg: "Email and password are required." }); 
         }
 
         const UserExist = await User.findOne({ email: email });

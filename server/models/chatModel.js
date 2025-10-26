@@ -1,5 +1,5 @@
 const messageSchema = new mongoose.Schema({
-    senderId: {
+     senderId: {
         type: String,
         required: true,
         index: true // Indexing this field is CRITICAL for quickly finding messages you sent

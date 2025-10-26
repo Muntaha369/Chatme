@@ -4,7 +4,7 @@ export const multiSocket = create((set) => ({
   Sockets: [],
   setSockets: (socket) => set(() => ({Sockets:socket})),
   removeSockets: (socket) => set((state)=>({Sockets:state.Sockets.filter(oldsocket=> oldsocket!= socket)}))
-}))
+})) 
 
 export const useReciverId = create((set)=>({
   socketID:'',

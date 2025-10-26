@@ -1,7 +1,7 @@
 export const verifyToken = async () => {
     const token = localStorage.getItem('authToken');
 
-    if (token) {
+    if (token) { 
         try {
             const response = await fetch('http://localhost:3002/api/auth/verify', {
                 method: 'POST',

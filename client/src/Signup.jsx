@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 
 // Simple SVG for the ChatMe logo (Can be replaced with an actual image if needed)
 const ChatMeLogo = () => (
