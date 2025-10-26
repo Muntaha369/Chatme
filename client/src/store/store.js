@@ -33,3 +33,8 @@ export const useToggler = create((set)=>({
   toggler:false,
   setToggler:(boolean) => set(() => ({toggler:boolean}))
 }))
+
+export const useData = create((set)=>({
+  allUsers:[],
+  setallUsers:(users) => set(() => ({allUsers:users}))
+}))
