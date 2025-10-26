@@ -9,6 +9,8 @@ import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './store/store';
 import { useUserID } from './store/store';
+import { useData } from './store/store';
+import axios from 'axios';
 
 // The socket connection should be established outside the component
 const socket = io.connect('http://localhost:3002');
@@ -23,6 +25,7 @@ const App = () => {
   const { setDataRoom } = useDataroom();
   const { setSockets } = multiSocket();
   const { setUserID } = useUserID();
+  const { setallUsers } = useData()
 
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState(socket.id);
@@ -49,6 +52,14 @@ const App = () => {
     }
     checkAuth()
     console.log(user)
+
+    const getData = async()=>{
+      const res = await axios.get('http://localhost:3002/api/all/getData')
+      console.log(res.data.msg)
+      setallUsers(res.data.msg)
+    }
+
+    getData()
 
     socket.on('hello', (arg) => {
       setId(arg);

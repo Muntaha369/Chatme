@@ -5,6 +5,7 @@ const http = require('http');
 const { socketInit } = require('./sockets/index');
 const ConnectDb = require('./db/db');
 const useRouter = require('./routes/router')
+const allRoute = require('./routes/allDataRoutes')
 
 app.use(express.json()); 
 app.use(cors({
@@ -17,6 +18,7 @@ const server = http.createServer(app);
 
 
 app.use('/api/auth',useRouter)
+app.use('/api/all',allRoute)
 
 socketInit(server);
 
@@ -27,9 +29,3 @@ ConnectDb().then(() => {
     process.exit(1);
 });
 
-
-// Trying things out
-
-//nothing much
-
-//something
