@@ -27,9 +27,3 @@ ConnectDb().then(() => {
     process.exit(1);
 });
 
-
-// Trying things out
-
-//nothing much
-
-//something

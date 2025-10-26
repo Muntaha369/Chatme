@@ -5,6 +5,8 @@ import { Zap, PlusCircle } from 'lucide-react';
 import { useDataroom } from '../store/store';
 import { useUserID } from '../store/store';
 import { useUser } from '../store/store';
+import {motion, AnimatePresence} from 'framer-motion'
+import ToggleButton from './ToggleButton';
  
 const UserList = () => {
   const { user } = useUser()
@@ -13,6 +15,7 @@ const UserList = () => {
   const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
   const [RoomList, setRoomList] = useState([])
+  const [modelOpen, setModelOpen] = useState(false)
   const {dataRoom} = useDataroom()
   
   // Log the current active user ID for debugging
@@ -20,6 +23,39 @@ const UserList = () => {
   // console.log("debug sockets",Sockets)
 
   // console.log("dataroom",dataRoom)
+
+  const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+};
+
+// Animation variants for the modal content
+const modalVariants = {
+    hidden: {
+        y: "-50px", // Start slightly above
+        opacity: 0,
+        scale: 0.95,
+    },
+    visible: {
+        y: "0px", // End at center
+        opacity: 1,
+        scale: 1,
+        transition: {
+            duration: 0.3,
+            ease: "easeOut",
+        },
+    },
+    exit: {
+        y: "30px", // Exit slightly below
+        opacity: 0,
+        scale: 0.95,
+        transition: {
+            duration: 0.2,
+            ease: "easeIn",
+        },
+    },
+};
+
   useEffect(() => {
     if (dataRoom && dataRoom.length > 0) {
         // Use the store's data to initialize the local room list
@@ -27,18 +63,24 @@ const UserList = () => {
     }
   }, [dataRoom]); 
 
+  useEffect(()=>{
+    console.log(modelOpen)
+  },[modelOpen])
+
   const handleCreateRoom = (e) => {
     e.preventDefault();
-    if (newRoomName.trim() === '') {
-        alert("Please enter a valid room name.");
-        return;
-    }
-    const roomIdentifier = newRoomName+"+"+"room"
-    console.log("fromUser",roomIdentifier)
-    setRoomList((prev)=>[roomIdentifier, ...prev])
-    console.log(`Creating/Switching to Room: ${newRoomName.trim()}`);
-    setSocketID(roomIdentifier.trim())
-    setNewRoomName('');
+    // if (newRoomName.trim() === '') {
+    //     alert("Please enter a valid room name.");
+    //     return;
+    // }
+    // const roomIdentifier = newRoomName+"+"+"room"
+    // console.log("fromUser",roomIdentifier)
+    // setRoomList((prev)=>[roomIdentifier, ...prev])
+    // console.log(`Creating/Switching to Room: ${newRoomName.trim()}`);
+    // setSocketID(roomIdentifier.trim())
+    // setNewRoomName('');
+    setModelOpen(true)
+    // console.log(modelOpen)
   };
 
   const isRoomActive = (roomName) => socketID === roomName;
@@ -66,6 +108,31 @@ const UserList = () => {
             <PlusCircle size={20} />
         </button>
       </form>
+
+      {
+        modelOpen && (
+          <motion.div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 mb-0 backdrop-blur-sm"
+                        variants={backdropVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden">
+
+            <motion.div
+              className="bg-gray-900 border-2 border-gray-700 rounded-xl shadow-2xl p-6 max-w-2xl h-[35%] w-full relative"
+                            variants={modalVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit">
+                              <p className='text-lg font-bold'>Create Chat</p>
+                              <div className='mt-3'>
+                                <ToggleButton/>
+                              </div>
+            </motion.div>
+
+          </motion.div>
+        )
+      }
 
       {
         RoomList.map((val, idx)=>(
