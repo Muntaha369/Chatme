@@ -6,7 +6,7 @@ module.exports = async (socket, io)=>{
   const allSockets = await io.fetchSockets();
   const allSocketsid = allSockets.map(s=>s.id)
   console.log('Other sockets : ', allSocketsid)
- 
+  
   socket.emit("hello", socket.id);
   io.emit("emitall",allSocketsid)
 

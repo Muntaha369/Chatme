@@ -18,7 +18,7 @@ const App = () => {
 
   const navigate = useNavigate();
 
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
   const { socketID } = useReciverId(); 
   const { setDataRoom } = useDataroom();
   const { setSockets } = multiSocket();
@@ -28,7 +28,6 @@ const App = () => {
   const [clientId, setId] = useState(socket.id);
   const [messages, setMessages] = useState([]);
   const [newUserId, setNewUserId] = useState('');
-  const [receiverIdInput, setReceiverIdInput] = useState('');
 
   
   useEffect(() => {
@@ -40,6 +39,7 @@ const App = () => {
       if(res && res.success){
         console.log("hip hip hoorray !!")
         setUser(res.message)
+        
       }else{
         console.log(res.success)
         console.log(res.message)
@@ -47,8 +47,8 @@ const App = () => {
         navigate('/login')
       }
     }
-
     checkAuth()
+    console.log(user)
 
     socket.on('hello', (arg) => {
       setId(arg);
@@ -57,6 +57,12 @@ const App = () => {
 
     socket.on('emitall', (data) => {
       setSockets(data);
+    })
+
+    socket.emit("send_username",user);
+
+    socket.on("all_userData",(data)=>{
+      console.log("FROM 65",data)
     })
 
     const receiveMessageHandler = (data) => {
@@ -85,7 +91,7 @@ const App = () => {
       socket.off('room_receive_message', roomReceiveMessageHandler); 
       socket.off('room_invitation');
     };
-  }, [setSockets, setDataRoom]); 
+  }, [setSockets, setDataRoom, user]); 
 
   const messageEmitter = (e) => {
     e.preventDefault();
