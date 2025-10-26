@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const {URI} = require('../keys/keys')
 
 const ConnectDb = async()=>{
-  try { 
+  try {
     await mongoose.connect(URI)
     console.log("connection succesfull to db");
   } catch (error) {

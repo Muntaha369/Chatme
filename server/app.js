@@ -1,35 +1,28 @@
 const express = require('express');
-const app = express()
-const cors = require('cors')
-const http = require('http')
-const { Server } = require('socket.io')
+const app = express();
+const cors = require('cors');
+const http = require('http');
+const { socketInit } = require('./sockets/index');
+const ConnectDb = require('./db/db');
+const useRouter = require('./routes/router')
 
-app.use(cors())
+app.use(express.json()); 
+app.use(cors({
+    origin: "http://localhost:5173", 
+    methods: ["GET", "POST"],
+}));
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5174",
-    methods: ["GET", "POST"],
-  },
+
+
+app.use('/api/auth',useRouter)
+
+socketInit(server);
+
+ConnectDb().then(() => {
+    server.listen(3002, () => console.log("Server is running on port 3002"));
+}).catch((error) => {
+    console.error("Failed to start server due to DB connection error:", error);
+    process.exit(1);
 });
-
-io.on("connection", (socket) => {
-  console.log(`USER CONNECTED: ${socket.id}`);
-  
-  socket.emit("hello", socket.id);
-
-  socket.on("send_message", (data) => {
-    console.log(`SERVER RECEIVED from ${data.Id}: ${data.message}`);
-    
-    socket.broadcast.emit("receive_message", data);
-  });
-
-
-  socket.on("disconnect", () => {
-    console.log(`USER DISCONNECTED: ${socket.id}`);
-  });
-});
-
-server.listen(3002, () => console.log("Server is running on port 3002"));
