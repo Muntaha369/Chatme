@@ -8,6 +8,8 @@ import { useUser } from '../store/store';
 import {motion} from 'framer-motion'
 import ToggleButton from './ToggleButton';
 import { useToggler } from '../store/store';
+import axios from 'axios';
+
  
 const UserList = () => {
   const { toggler } = useToggler()
@@ -59,6 +61,18 @@ const modalVariants = {
 };
 
   useEffect(() => {
+    const getData = async()=>{
+      const res = await axios.get('http://localhost:3002/api/all/getData')
+      console.log(res.data.msg)
+      setallUsers(res.data.msg)
+    }
+
+    getData()
+  
+  }, [])
+  
+
+  useEffect(() => {
     if (dataRoom && dataRoom.length > 0) {
         // Use the store's data to initialize the local room list
         setRoomList(dataRoom); 
@@ -71,18 +85,7 @@ const modalVariants = {
 
   const handleCreateRoom = (e) => {
     e.preventDefault();
-    // if (newRoomName.trim() === '') {
-    //     alert("Please enter a valid room name.");
-    //     return;
-    // }
-    // const roomIdentifier = newRoomName+"+"+"room"
-    // console.log("fromUser",roomIdentifier)
-    // setRoomList((prev)=>[roomIdentifier, ...prev])
-    // console.log(`Creating/Switching to Room: ${newRoomName.trim()}`);
-    // setSocketID(roomIdentifier.trim())
-    // setNewRoomName('');
     setModelOpen(true)
-    // console.log(modelOpen)
   };
 
   const isRoomActive = (roomName) => socketID === roomName;
@@ -139,7 +142,9 @@ const modalVariants = {
                                 <div className=' flex justify-center items-center flex-col' >
                                   <input placeholder='Enter a Chat...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
                                   <div className='w-full'>
-                                    <button className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
+                                    <button 
+                                    onClick={()=>setModelOpen(false)}
+                                    className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
@@ -156,7 +161,9 @@ const modalVariants = {
                                   <input placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
                                   <input placeholder='Enter participants...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt mb-4' type="text" />
                                   <div className='w-full'>
-                                    <button className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
+                                    <button
+                                    onClick={()=>setModelOpen(false)}
+                                    className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
