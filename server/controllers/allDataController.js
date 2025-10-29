@@ -2,7 +2,10 @@ const User = require('../models/model')
 
 const GetUsers = async (req,res)=>{
   const users = await User.find({})
-  res.status(201).json({msg:users})
+  const result = users.map((val)=>{
+  return val.username
+  })
+  res.status(201).json({msg:result})
 }
 
 module.exports = {GetUsers}

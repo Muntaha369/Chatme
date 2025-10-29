@@ -5,6 +5,7 @@ import { Zap, PlusCircle } from 'lucide-react';
 import { useDataroom } from '../store/store';
 import { useUserID } from '../store/store';
 import { useUser } from '../store/store';
+import {useData} from '../store/store'
 import {motion} from 'framer-motion'
 import ToggleButton from './ToggleButton';
 import { useToggler } from '../store/store';
@@ -12,15 +13,19 @@ import axios from 'axios';
 
  
 const UserList = () => {
+  const { setallUsers, allUsers } = useData()
   const { toggler } = useToggler()
   const { user } = useUser()
   const { userID } = useUserID()
   const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
+  const [newAlluser, setnewAlluser] = useState({})
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
+  const [changedData, setChangedData] = useState([])
   const {dataRoom} = useDataroom()
+
   
   // Log the current active user ID for debugging
   // console.log("Current recipient:", socketID);
@@ -64,12 +69,19 @@ const modalVariants = {
     const getData = async()=>{
       const res = await axios.get('http://localhost:3002/api/all/getData')
       console.log(res.data.msg)
-      setallUsers(res.data.msg)
+      // setallUsers(res.data.msg)
+      setnewAlluser(res.data.msg)
+      // console.log(allUsers)
     }
 
     getData()
   
   }, [])
+
+  useEffect(() => {
+    console.log("now you can see my friend",newAlluser)
+  }, [newAlluser])
+  
   
 
   useEffect(() => {
@@ -87,6 +99,16 @@ const modalVariants = {
     e.preventDefault();
     setModelOpen(true)
   };
+
+  const handleChange = (e)=>{
+    const input = e.target.value;
+    setChangedData(input);
+    const filteredData = newAlluser.filter((val) =>
+  val.toLowerCase().includes(input.toLowerCase())
+  );
+
+    console.log("filterdData", filteredData)
+  }
 
   const isRoomActive = (roomName) => socketID === roomName;
 
@@ -140,7 +162,9 @@ const modalVariants = {
                               {
                                 !toggler && (
                                 <div className=' flex justify-center items-center flex-col' >
-                                  <input placeholder='Enter a Chat...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
+                                  <input 
+                                  onChange={handleChange}
+                                  placeholder='Enter a Chat...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
                                   <div className='w-full'>
                                     <button 
                                     onClick={()=>setModelOpen(false)}
