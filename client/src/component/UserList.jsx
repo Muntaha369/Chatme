@@ -13,7 +13,6 @@ import axios from 'axios';
 
  
 const UserList = () => {
-  const { setallUsers, allUsers } = useData()
   const { toggler } = useToggler()
   const { user } = useUser()
   const { userID } = useUserID()
@@ -24,6 +23,7 @@ const UserList = () => {
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
   const [changedData, setChangedData] = useState([])
+  const [chat, setChat] = useState([])
   const {dataRoom} = useDataroom()
 
   
@@ -79,7 +79,7 @@ const modalVariants = {
   }, [])
 
   useEffect(() => {
-    console.log("now you can see my friend",newAlluser)
+    // console.log("now you can see my friend",newAlluser)
   }, [newAlluser])
   
   
@@ -190,6 +190,7 @@ const modalVariants = {
       <p
         key={index} // Added a key, which is important for list rendering
         className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
+        onClick={()=>setChat((prev)=>[data,...prev])}
       >
         {data}
       </p>
@@ -249,6 +250,26 @@ const modalVariants = {
       <h2 className='text-2xl font-bold text-gray-800 border-b pb-2 w-full pt-4'>
         Active Users ({Sockets.length})
       </h2>
+
+      {
+        chat.map((val, idx)=>(
+          <div 
+            onClick={() => setSocketID(val)}
+            key={idx} 
+            className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
+                      ${isRoomActive(val) ? 'bg-indigo-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+          >
+            <div className='flex items-center'>
+                <Zap className='text-yellow-400 mr-3' size={20} />
+                <p className='text-white font-medium truncate'>
+                  {userID === val ? `${user}`: `${val.substring(0, 12)}`}
+                    {/* User: {val.substring(0, 8)}... */}
+                </p>
+            </div>
+            <span className='text-green-400 text-xs font-mono'>ONLINE</span>
+          </div>
+        ))
+      }
       
       {
         Sockets &&
