@@ -1,4 +1,4 @@
-const User = require('../models/model')
+const Message = require('../models/chatModel')
 
 module.exports = async (socket, io)=>{
     // console.log(`USER CONNECTED: ${socket.id}`);
@@ -10,9 +10,17 @@ module.exports = async (socket, io)=>{
   socket.emit("hello", socket.id);
   io.emit("emitall",allSocketsid)
 
-  socket.on("send_username", (data)=>{
-    console.log(data);
+  socket.on("send_username", async(data)=>{
+    console.log("This one is the one",data);
     io.emit("all_userData", data);
+    const Chats = await Message.find({
+        $or: [
+            { senderId: data },
+            { receiverId: data }
+        ]
+    }).sort({ timestamp: 1 })
+    console.log("This are the chats",Chats)
+    socket.emit("Chat_history",Chats)
   })
 
   // Sending message

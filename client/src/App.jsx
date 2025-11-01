@@ -10,7 +10,6 @@ import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './store/store';
 import { useUserID } from './store/store';
-import { useData } from './store/store';
 import axios from 'axios';
 
 // The socket connection should be established outside the component
@@ -69,6 +68,8 @@ const App = () => {
     socket.on("all_userData",(data)=>{
       console.log("FROM 65",data)
     })
+
+    socket.on("Chat_history",(data)=>console.log(data))
 
     const receiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
