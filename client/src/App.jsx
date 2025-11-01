@@ -69,7 +69,10 @@ const App = () => {
       console.log("FROM 65",data)
     })
 
-    socket.on("Chat_history",(data)=>console.log(data))
+    socket.on("Chat_history",(data)=>{
+      const message = data.map((val)=>val.messageText)
+      console.log(message)
+    })
 
     const receiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
