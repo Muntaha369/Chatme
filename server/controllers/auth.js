@@ -79,6 +79,7 @@ const login = async(req,res)=>{
      res.status(200).json({
        msg: "Login successful",
        token: token,
+       contacts:UserExist.contacts,
        UserId: UserExist._id.toString(),
      });
  } catch (error) {

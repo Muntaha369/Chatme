@@ -38,3 +38,8 @@ export const useData = create((set)=>({
   allUsers:[],
   setallUsers:(users) => set(() => ({allUsers:users}))
 }))
+
+export const useContact = create((set)=>({
+  contact:[],
+  setContact:(updatedContact) => set(()=>({contact:[updatedContact]})) 
+}))

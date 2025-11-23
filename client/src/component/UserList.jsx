@@ -9,20 +9,20 @@ import {motion} from 'framer-motion'
 import ToggleButton from './ToggleButton';
 import { useToggler } from '../store/store';
 import axios from 'axios';
-
+import { useContact } from '../store/store';
  
 const UserList = () => {
   const { toggler } = useToggler()
-  const { user } = useUser()
-  const { userID } = useUserID()
-  const { Sockets } = multiSocket(); 
+  // const { user } = useUser()
+  // const { userID } = useUserID();
+  const { contact, setContact } = useContact()
+  // const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
   const [newAlluser, setnewAlluser] = useState({})
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
   const [changedData, setChangedData] = useState([])
-  const [chat, setChat] = useState([])
   const {dataRoom} = useDataroom()
 
   
@@ -67,13 +67,15 @@ const modalVariants = {
   useEffect(() => {
     const getData = async()=>{
       const res = await axios.get('http://localhost:3002/api/all/getData')
-      console.log(res.data.msg)
+      console.log("This is the message",res.data.msg)
       // setallUsers(res.data.msg)
       setnewAlluser(res.data.msg)
       // console.log(allUsers)
-    }
+    } 
 
     getData()
+
+    console.log("this is the contact",contact)
   
   }, [])
 
@@ -189,7 +191,9 @@ const modalVariants = {
       <p
         key={index} // Added a key, which is important for list rendering
         className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
-        onClick={()=>setChat((prev)=>[data,...prev])}
+        onClick={()=>{setContact(data)
+                      console.log("After contact",contact)
+        }}
       >
         {data}
       </p>
@@ -246,33 +250,13 @@ const modalVariants = {
       {/* --- Chat Options List --- */}
 
       {/* 2. Active User List --- */}
-      <h2 className='text-2xl font-bold text-gray-800 border-b pb-2 w-full pt-4'>
+      {/* <h2 className='text-2xl font-bold text-gray-800 border-b pb-2 w-full pt-4'>
         Active Users ({Sockets.length})
-      </h2>
-
-      {
-        chat.map((val, idx)=>(
-          <div 
-            onClick={() => setSocketID(val)}
-            key={idx} 
-            className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
-                      ${isRoomActive(val) ? 'bg-indigo-600' : 'bg-gray-800 hover:bg-gray-700'}`}
-          >
-            <div className='flex items-center'>
-                <Zap className='text-yellow-400 mr-3' size={20} />
-                <p className='text-white font-medium truncate'>
-                  {userID === val ? `${user}`: `${val.substring(0, 12)}`}
-                    {/* User: {val.substring(0, 8)}... */}
-                </p>
-            </div>
-            <span className='text-green-400 text-xs font-mono'>ONLINE</span>
-          </div>
-        ))
-      }
+      </h2> */}
       
       {
-        Sockets &&
-        Sockets.map((val) => (
+        contact &&
+        contact.map((val) => (
           
           <div 
             onClick={() => setSocketID(val)}
@@ -283,8 +267,9 @@ const modalVariants = {
             <div className='flex items-center'>
                 <Zap className='text-yellow-400 mr-3' size={20} />
                 <p className='text-white font-medium truncate'>
-                  {userID === val ? `User: ${user}`: `User: ${val.substring(0, 8)}...`}
+                  {/* {userID === val ? `User: ${user}`: `User: ${val.substring(0, 8)}...`} */}
                     {/* User: {val.substring(0, 8)}... */}
+                    {val}
                 </p>
             </div>
             <span className='text-green-400 text-xs font-mono'>ONLINE</span>

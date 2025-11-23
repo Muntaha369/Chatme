@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Import axios for API call
 import { useNavigate } from 'react-router-dom';
+import { useContact } from './store/store';
  
 // Simple SVG for the ChatMe logo (Can be replaced with an actual image if needed)
 const ChatMeLogo = () => (
@@ -18,6 +19,7 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(''); // State to hold login error messages
+    const { setContact } = useContact();
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
@@ -35,7 +37,7 @@ function LoginPage() {
             // 1. Store the token (e.g., in localStorage or Zustand store)
             localStorage.setItem('authToken', response.data.token);
             localStorage.setItem('userId', response.data.UserId);
-            
+            setContact(response.data.contact)
             // 2. Redirect to the chat page or dashboard
             // Example using window.location (replace with Next.js router if needed)
 
