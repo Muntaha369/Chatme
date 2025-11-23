@@ -111,6 +111,11 @@ const modalVariants = {
     console.log("filterdData", filteredData)
   }
 
+  const AddContact = (data)=>{
+    setContact(data)
+    console.log(data)
+  }
+
   const isRoomActive = (roomName) => socketID === roomName;
 
   return (
@@ -191,9 +196,7 @@ const modalVariants = {
       <p
         key={index} // Added a key, which is important for list rendering
         className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
-        onClick={()=>{setContact(data)
-                      console.log("After contact",contact)
-        }}
+        onClick={()=>AddContact(data)}
       >
         {data}
       </p>

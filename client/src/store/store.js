@@ -39,7 +39,7 @@ export const useData = create((set)=>({
   setallUsers:(users) => set(() => ({allUsers:users}))
 }))
 
-export const useContact = create((set)=>({
-  contact:[],
-  setContact:(updatedContact) => set(()=>({contact:[updatedContact]})) 
-}))
+export const useContact = create((set) => ({
+  contact: [],
+  setContact: (newContact) => set((state) => ({contact: [newContact, ...state.contact] }))
+}));
