@@ -8,4 +8,19 @@ const GetUsers = async (req,res)=>{
   res.status(201).json({msg:result})
 }
 
-module.exports = {GetUsers}
+const UpdateContacts = async(req,res)=>{
+try {
+    const { newName, contacts } = req.body;
+    const updatedContacts = await User.findOneAndUpdate(
+      { username: newName },  
+      { $push: { contacts } },
+      { new: true }
+    );
+  
+    res.status(201).json({updatedContacts})
+} catch (error) {
+  res.status(500).json({msg:"Something is wrong here"})
+}
+}
+
+module.exports = {GetUsers, UpdateContacts}
