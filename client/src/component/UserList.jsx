@@ -123,6 +123,15 @@ const modalVariants = {
   }
 
   const AddContact = async(data)=>{
+
+    const exists = contact.some(
+    (contact) => contact === data
+    );
+
+    if (exists) {
+      console.log("Contact already exists, skipping update");
+      return;  // stop here (don’t call API)
+    }
     setContact(data)
     const email = localStorage.getItem('email');
     const UpdateContacts = await axios.post('http://localhost:3002/api/all/addContacts',
