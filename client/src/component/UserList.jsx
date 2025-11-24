@@ -65,7 +65,7 @@ const modalVariants = {
 };
 
   useEffect(() => {
-    const getData = async()=>{
+    const getAlluser = async()=>{
       const res = await axios.get('http://localhost:3002/api/all/getData')
       console.log("This is the message",res.data.msg)
       // setallUsers(res.data.msg)
@@ -73,10 +73,21 @@ const modalVariants = {
       // console.log(allUsers)
     } 
 
-    getData()
+    getAlluser()
 
-    console.log("this is the contact",contact)
-  
+    const getContact = async()=>{
+      const email = localStorage.getItem('email');
+      const res  = await axios.post('http://localhost:3002/api/all/addContacts',{clientName: email, contacts:'USUAL'})
+      // console.log("This is the contact data",res.data.msg)
+
+      const contactslist = res.data.msg
+
+      contactslist.map((val)=>setContact(val))
+
+    }  
+
+    getContact()
+
   }, [])
 
   useEffect(() => {
@@ -111,10 +122,10 @@ const modalVariants = {
     console.log("filterdData", filteredData)
   }
 
-  const AddContact = (data)=>{
+  const AddContact = async(data)=>{
     setContact(data)
     const email = localStorage.getItem('email');
-    const UpdateContacts = axios.post('http://localhost:3002/api/all/addContacts',
+    const UpdateContacts = await axios.post('http://localhost:3002/api/all/addContacts',
                                       {clientName:email, contacts:data})
     console.log("NewContact",UpdateContacts)
     console.log(data)

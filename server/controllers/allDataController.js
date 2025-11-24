@@ -11,6 +11,11 @@ const GetUsers = async (req,res)=>{
 const UpdateContacts = async(req,res)=>{
 try {
     const { clientName, contacts } = req.body;
+  if(contacts === "USUAL"){
+    const user = await User.findOne({email:clientName})
+    return res.status(201).json({msg:user.contacts})
+  }
+ 
     const updatedContacts = await User.findOneAndUpdate(
       { email: clientName },  
       { $push: { contacts } },
@@ -18,6 +23,7 @@ try {
     );
   
     res.status(201).json({updatedContacts})
+  
 } catch (error) {
   res.status(500).json({msg:"Something is wrong here"})
 }
