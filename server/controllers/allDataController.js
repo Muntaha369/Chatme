@@ -10,9 +10,9 @@ const GetUsers = async (req,res)=>{
 
 const UpdateContacts = async(req,res)=>{
 try {
-    const { newName, contacts } = req.body;
+    const { clientName, contacts } = req.body;
     const updatedContacts = await User.findOneAndUpdate(
-      { username: newName },  
+      { email: clientName },  
       { $push: { contacts } },
       { new: true }
     );

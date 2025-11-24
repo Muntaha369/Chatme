@@ -41,6 +41,7 @@ const App = () => {
       if(res && res.success){
         console.log("hip hip hoorray !!")
         setUser(res.message)
+        localStorage.setItem('email',res.message)
         
       }else{
         console.log(res.success)
