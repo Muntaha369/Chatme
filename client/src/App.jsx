@@ -27,7 +27,7 @@ const App = () => {
   const { setUserID } = useUserID();
 
   const [message, setMessage] = useState('');
-  const [clientId, setId] = useState(socket.id);
+  const [clientId, setId] = useState('');
   const [messages, setMessages] = useState([]);
   const [newUserId, setNewUserId] = useState('');
 
@@ -56,11 +56,13 @@ const App = () => {
     const handleHello = (arg) => {
       setId(arg);
       setUserID(arg)
-      // console.log("this is socket id",arg)
+      console.log("this is socket id",socket.id)
     }
 
     const handleEmitall = (data) => {
       setSockets(data);
+      console.log(data)
+      socket.emit("emitOldtoNewlyJoined",{user, previousSock:socket.id, receiver:data.socketId})
     }
 
     const handleUserData = (data)=>{
@@ -69,7 +71,7 @@ const App = () => {
 
     const handleChathistory = (data)=>{
       const allmessage = data.map((val)=>val)
-      setMessages(allmessage)
+      // setMessages(allmessage)
       console.log("chats",allmessage);
     }
 
@@ -89,10 +91,15 @@ const App = () => {
       socket.emit("join_room", data.roomName); 
       setDataRoom(data.roomName); 
     }
+
+    const handlePreFRnewSock=(data)=>{
+      console.log("ThreewayHandshake", data)
+    }
     
-    socket.on('hello', handleHello);
-    socket.on('emitall', handleEmitall)
     socket.emit("send_username",user);
+    socket.on('hello', handleHello);
+    socket.on('emitNewlyJoined', handleEmitall)
+    socket.on('previousFRnewSock',handlePreFRnewSock)
     socket.on("all_userData", handleUserData)
     socket.on("Chat_history", handleChathistory)
     socket.on('receive_message', receiveMessageHandler);
@@ -101,7 +108,7 @@ const App = () => {
 
     return () => {
       socket.off('hello',handleHello);
-      socket.off('emitall',handleEmitall);
+      socket.off('emitNewlyJoined',handleEmitall);
       socket.off("all_userData",handleUserData); 
       socket.off("Chat_history",handleUserData); 
       socket.off('receive_message', receiveMessageHandler);

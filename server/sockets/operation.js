@@ -6,10 +6,10 @@ module.exports = async (socket, io)=>{
   const allSocketsid = allSockets.map(s=>s.id)
   console.log('Other sockets : ', allSocketsid)
   
-  socket.emit("hello", socket.id);
-  io.emit("emitall",allSocketsid)
-
+  
   socket.on("send_username", async(data)=>{
+    socket.emit("hello", socket.id);
+    io.emit("emitNewlyJoined", {data, socketId:socket.id})
     console.log("This one is the one",data);
     io.emit("all_userData", data);
     const Chats = await Message.find({
@@ -20,6 +20,10 @@ module.exports = async (socket, io)=>{
     }).sort({ timestamp: 1 })
     console.log("This are the chats",Chats)
     socket.emit("Chat_history",Chats)
+  })
+
+  socket.on("emitOldtoNewlyJoined",(data)=>{
+    socket.to(data.receiver).emit("previousFRnewSock",{user:data.user, previousSock:data.previousSock})
   })
 
   // Sending message
