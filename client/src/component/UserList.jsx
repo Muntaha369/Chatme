@@ -16,13 +16,14 @@ const UserList = () => {
   // const { user } = useUser()
   // const { userID } = useUserID();
   const { contact, setContact } = useContact()
-  // const { Sockets } = multiSocket(); 
+  const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
   const [newAlluser, setnewAlluser] = useState({})
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
   const [changedData, setChangedData] = useState([])
+  const [User, setUser] = useState('')
   const {dataRoom} = useDataroom()
 
   
@@ -93,6 +94,11 @@ const modalVariants = {
   useEffect(() => {
     // console.log("now you can see my friend",newAlluser)
   }, [newAlluser])
+
+   {/* Ensured socket array is getting updated */}
+  useEffect(()=>{
+    console.log("This socket belongs",socketID)
+  },[socketID])
   
   
 
@@ -140,7 +146,15 @@ const modalVariants = {
     // console.log(data)
   }
 
-  const isRoomActive = (roomName) => socketID === roomName;
+  const manageContactsClick = (val) => {
+    const socket = Sockets.find((s) => s.data === val);
+    if (socket) {
+      setSocketID(socket.socketId);
+    }
+  };
+
+
+  const isRoomActive = (roomName) => User === roomName;
 
   return (
     <div className='w-full p-6 flex flex-col items-start space-y-4 max-w-sm mx-auto'>
@@ -286,7 +300,10 @@ const modalVariants = {
         contact.map((val) => (
           
           <div 
-            onClick={() => setSocketID(val)}
+            onClick={() => {
+              manageContactsClick(val)
+              setUser(val)
+            }}
             key={val} 
             className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
                       ${isRoomActive(val) ? 'bg-indigo-600' : 'bg-gray-800 hover:bg-gray-700'}`}

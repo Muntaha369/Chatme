@@ -12,13 +12,12 @@ export const multiSocket = create((set) => ({
         )
       };
     }
-    
+
     return { 
       Sockets: [newSocket, ...state.Sockets] 
     };
   }),
 }));
-// removeSockets: (socket) => set((state)=>({Sockets:state.Sockets.filter(oldsocket=> oldsocket!= socket)}))
 
 export const useReciverId = create((set)=>({
   socketID:'',

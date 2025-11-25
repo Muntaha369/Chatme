@@ -93,9 +93,9 @@ const App = () => {
     }
 
     const handlePreFRnewSock=(data)=>{
-      const change = {data:data.user, socketId:data.previousSock}
-      setSockets(change)
-      console.log("ThreewayHandshake", data)
+      const change = {data:data.user, socketId:data.previousSock};
+      setSockets(change);
+      console.log("ThreewayHandshake", data);
     }
     
     socket.emit("send_username",user);
@@ -118,6 +118,7 @@ const App = () => {
       socket.off('room_invitation',handleRoomInvitation);
     };
   }, [setSockets, setDataRoom, user]); 
+
 
   const messageEmitter = (e) => {
     e.preventDefault();
