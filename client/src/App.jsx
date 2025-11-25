@@ -93,6 +93,8 @@ const App = () => {
     }
 
     const handlePreFRnewSock=(data)=>{
+      const change = {data:data.user, socketId:data.previousSock}
+      setSockets(change)
       console.log("ThreewayHandshake", data)
     }
     

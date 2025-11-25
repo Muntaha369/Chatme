@@ -2,9 +2,23 @@ import { create } from 'zustand'
 
 export const multiSocket = create((set) => ({
   Sockets: [],
-  setSockets: (socket) => set(() => ({Sockets:socket})),
-  removeSockets: (socket) => set((state)=>({Sockets:state.Sockets.filter(oldsocket=> oldsocket!= socket)}))
-})) 
+  setSockets: (newSocket) => set((state) => {
+    const exists = state.Sockets.some((s) => s.data === newSocket.data);
+
+    if (exists) {
+      return {
+        Sockets: state.Sockets.map((s) => 
+          s.data === newSocket.data ? newSocket : s
+        )
+      };
+    }
+    
+    return { 
+      Sockets: [newSocket, ...state.Sockets] 
+    };
+  }),
+}));
+// removeSockets: (socket) => set((state)=>({Sockets:state.Sockets.filter(oldsocket=> oldsocket!= socket)}))
 
 export const useReciverId = create((set)=>({
   socketID:'',
