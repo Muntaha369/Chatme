@@ -39,8 +39,8 @@ const App = () => {
       const res = await verifyToken()
 
       if(res && res.success){
-        console.log("hip hip hoorray !!")
-        setUser(res.message)
+        // console.log("hip hip hoorray !!")
+        setUser(res.message2)
         localStorage.setItem('email',res.message)
         
       }else{
@@ -53,53 +53,60 @@ const App = () => {
     checkAuth()
     console.log(user)
 
-
-
-    socket.on('hello', (arg) => {
+    const handleHello = (arg) => {
       setId(arg);
       setUserID(arg)
-    });
+      // console.log("this is socket id",arg)
+    }
 
-    socket.on('emitall', (data) => {
+    const handleEmitall = (data) => {
       setSockets(data);
-    })
+    }
 
-    socket.emit("send_username",user);
-
-    socket.on("all_userData",(data)=>{
+    const handleUserData = (data)=>{
       console.log("FROM 65",data)
-    })
+    }
 
-    socket.on("Chat_history",(data)=>{
-      const message = data.map((val)=>val.messageText)
-      console.log(message)
-    })
+    const handleChathistory = (data)=>{
+      const allmessage = data.map((val)=>val)
+      setMessages(allmessage)
+      console.log("chats",allmessage);
+    }
 
+    
     const receiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
       console.log('Received message:', data.message);
     };
-
+    
     const roomReceiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
       console.log("Received room message:", data.message);
     };
 
-    socket.on('receive_message', receiveMessageHandler);
-    socket.on('room_receive_message', roomReceiveMessageHandler); 
-
-    socket.on('room_invitation', (data) => {
+    const handleRoomInvitation = (data) => {
       console.log("From invitation", data);
       socket.emit("join_room", data.roomName); 
       setDataRoom(data.roomName); 
-    })
+    }
+    
+    socket.on('hello', handleHello);
+    socket.on('emitall', handleEmitall)
+    socket.emit("send_username",user);
+    socket.on("all_userData", handleUserData)
+    socket.on("Chat_history", handleChathistory)
+    socket.on('receive_message', receiveMessageHandler);
+    socket.on('room_receive_message', roomReceiveMessageHandler); 
+    socket.on('room_invitation', handleRoomInvitation)
 
     return () => {
-      socket.off('hello');
-      socket.off('emitall');
+      socket.off('hello',handleHello);
+      socket.off('emitall',handleEmitall);
+      socket.off("all_userData",handleUserData); 
+      socket.off("Chat_history",handleUserData); 
       socket.off('receive_message', receiveMessageHandler);
       socket.off('room_receive_message', roomReceiveMessageHandler); 
-      socket.off('room_invitation');
+      socket.off('room_invitation',handleRoomInvitation);
     };
   }, [setSockets, setDataRoom, user]); 
 

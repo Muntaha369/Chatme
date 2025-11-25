@@ -137,7 +137,7 @@ const modalVariants = {
     const UpdateContacts = await axios.post('http://localhost:3002/api/all/addContacts',
                                       {clientName:email, contacts:data})
     console.log("NewContact",UpdateContacts)
-    console.log(data)
+    // console.log(data)
   }
 
   const isRoomActive = (roomName) => socketID === roomName;

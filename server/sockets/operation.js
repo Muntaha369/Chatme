@@ -2,7 +2,6 @@ const Message = require('../models/chatModel')
 
 module.exports = async (socket, io)=>{
     // console.log(`USER CONNECTED: ${socket.id}`);
-  // const newall = 
   const allSockets = await io.fetchSockets();
   const allSocketsid = allSockets.map(s=>s.id)
   console.log('Other sockets : ', allSocketsid)
@@ -53,7 +52,7 @@ module.exports = async (socket, io)=>{
   })
 
   socket.on("disconnect", () => {
-    // console.log(`USER DISCONNECTED: ${socket.id}`);
+    console.log(`USER DISCONNECTED: ${socket.id}`);
     setTimeout(async () => {
             const remainingSockets = await io.fetchSockets();
             const remainingUserIds = remainingSockets.map(s => s.id);

@@ -87,7 +87,7 @@ const login = async(req,res)=>{
  }
 }
 
-const verify = (req, res) => {
+const verify = async(req, res) => {
 
     const { token } = req.body;
 
@@ -102,10 +102,11 @@ const verify = (req, res) => {
 
 
         console.log("Token Verified Successfully:", decodedPayload);
+        const Uname = await User.findOne({email:decodedPayload.email})
         return res.status(200).json({
             success: true,
             message: decodedPayload.email,
-
+            message2: Uname.username
         });
 
     } catch (error) {
