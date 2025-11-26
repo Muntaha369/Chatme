@@ -179,7 +179,7 @@ const App = () => {
     })
     .slice() // Create a copy
 
-    
+    const targetReceiver = localStorage.getItem('reciver');
 
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
@@ -217,38 +217,45 @@ const App = () => {
         {/* Message Display Area */}
         <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
           
-          {
-            chatHistory.map((val, idx)=>{
-              if((val.senderId === sender && val.reciverId === localStorage.getItem('reciver'))||
-              (val.senderId === localStorage.getItem('reciver') && val.reciverId === sender )){
-                // const isSender = val.senderId;
-                // const isReciever = val.reciverId
-                console.log("something")
-                return(
-                <div
-                key={idx}
-                className={`flex ${val.senderId === sender? 'justify-end' : 'justify-start'}`}
+         {
+           chatHistory
+           .filter((val) => 
+              (val.senderId === sender && val.receiverId === targetReceiver) ||
+             (val.senderId === targetReceiver && val.receiverId === sender)
+           )
+          .map((val, idx) => {
+            // Check if I am the sender
+            // console.log("This is sender",sender,"This is val sender", val.senderId, "This is targetReceiver" , targetReceiver,"This is val receiver", val.reciverId)
+            const isMe = val.senderId === sender;
+
+            return (
+              <div
+                // Use val._id if available, otherwise idx
+                key={idx} 
+                className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
               >
-                <div 
+                <div
                   className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl text-white shadow-md ${
-                    val.senderId === sender ? 'bg-indigo-600 rounded-br-sm' : 'bg-gray-600 rounded-tl-sm'
+                    isMe 
+                      ? 'bg-indigo-600 rounded-br-sm' // My messages (Purple)
+                      : 'bg-gray-600 rounded-tl-sm'   // Their messages (Gray)
                   }`}
                 >
                   <p className='font-bold text-xs opacity-80 mb-1'>
-                    {/* Display sender's ID, and note if it's a room */}
-                    {val.senderId === sender ? 'You' : `User: ${val.reciverId}`} 
-                    {isRoom && (
-                        <span className='ml-2 text-yellow-300 font-normal'>
-                            (Room)
-                        </span>
-                    )}
+                    {/* 3. LOGIC FIX: If it's not me, show the SENDER'S name, not the receiver's */}
+                    {isMe ? 'You' : val.senderId} 
+                    
+                    {/* {isRoom && (
+                      <span className='ml-2 text-yellow-300 font-normal'>
+                        (Room)
+                      </span>
+                    )} */}
                   </p>
-                  <p className='break-words text-sm'>{val.messageText}</p> 
+                  <p className='break-words text-sm'>{val.messageText}</p>
                 </div>
               </div>
-            )}
-            })
-          }
+            );
+          })}
           {currentChatMessages.map((msg, index) => {
 
             const isSender = msg.Id === clientId;

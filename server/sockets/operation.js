@@ -17,7 +17,7 @@ module.exports = async (socket, io)=>{
             { senderId: data },
             { receiverId: data }
         ]
-    }).sort({ timestamp: 1 })
+    }).sort({ timestamp: -1 })
     console.log("This are the chats",Chats)
     socket.emit("Chat_history",Chats)
   })
