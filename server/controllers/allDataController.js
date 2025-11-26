@@ -1,4 +1,5 @@
 const User = require('../models/model')
+const Messages  =require('../models/chatModel')
 
 const GetUsers = async (req,res)=>{
   const users = await User.find({})
@@ -28,5 +29,19 @@ try {
   res.status(500).json({msg:"Something is wrong here"})
 }
 }
+
+// const GetMessage = async(req,res)=>{
+//   try {
+//     const {name} = req.body;
+//     const messages = await Messages.find({
+//     $or: [
+//       { senderId: name },
+//       { receiverId: name }
+//     ]});
+//     res.status(201).json({messages})
+//   } catch (error) {
+//     res.status(500).json({msg:"Something is wrong here"})
+//   }
+// }
 
 module.exports = {GetUsers, UpdateContacts}

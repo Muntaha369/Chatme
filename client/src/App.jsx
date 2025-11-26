@@ -42,6 +42,7 @@ const App = () => {
         // console.log("hip hip hoorray !!")
         setUser(res.message2)
         localStorage.setItem('email',res.message)
+        console.log("this is me",res.message2)
         
       }else{
         console.log(res.success)

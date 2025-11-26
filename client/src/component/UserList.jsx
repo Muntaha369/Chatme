@@ -303,6 +303,7 @@ const modalVariants = {
             onClick={() => {
               manageContactsClick(val)
               setUser(val)
+              localStorage.setItem('reciver',val)
             }}
             key={val} 
             className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
