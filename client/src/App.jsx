@@ -29,9 +29,12 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState('');
   const [messages, setMessages] = useState([]);
+  const [chatHistory, setChatHistory] = useState([])
   const [newUserId, setNewUserId] = useState('');
+  const [sender, setSender] = useState('')
 
-  
+  useEffect(()=>{console.log("sender is set")},[sender])
+
   useEffect(() => {
 
     // this is token verification logic
@@ -43,7 +46,8 @@ const App = () => {
         setUser(res.message2)
         localStorage.setItem('email',res.message)
         console.log("this is me",res.message2)
-        
+        setSender(res.message2)
+
       }else{
         console.log(res.success)
         console.log(res.message)
@@ -72,8 +76,9 @@ const App = () => {
 
     const handleChathistory = (data)=>{
       const allmessage = data.map((val)=>val)
-      // setMessages(allmessage)
+      setChatHistory(allmessage)
       console.log("chats",allmessage);
+      console.log("this the history",chatHistory)
     }
 
     
@@ -174,7 +179,7 @@ const App = () => {
     })
     .slice() // Create a copy
 
-
+    
 
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
@@ -212,7 +217,38 @@ const App = () => {
         {/* Message Display Area */}
         <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
           
-          
+          {
+            chatHistory.map((val, idx)=>{
+              if((val.senderId === sender && val.reciverId === localStorage.getItem('reciver'))||
+              (val.senderId === localStorage.getItem('reciver') && val.reciverId === sender )){
+                // const isSender = val.senderId;
+                // const isReciever = val.reciverId
+                console.log("something")
+                return(
+                <div
+                key={idx}
+                className={`flex ${val.senderId === sender? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl text-white shadow-md ${
+                    val.senderId === sender ? 'bg-indigo-600 rounded-br-sm' : 'bg-gray-600 rounded-tl-sm'
+                  }`}
+                >
+                  <p className='font-bold text-xs opacity-80 mb-1'>
+                    {/* Display sender's ID, and note if it's a room */}
+                    {val.senderId === sender ? 'You' : `User: ${val.reciverId}`} 
+                    {isRoom && (
+                        <span className='ml-2 text-yellow-300 font-normal'>
+                            (Room)
+                        </span>
+                    )}
+                  </p>
+                  <p className='break-words text-sm'>{val.messageText}</p> 
+                </div>
+              </div>
+            )}
+            })
+          }
           {currentChatMessages.map((msg, index) => {
 
             const isSender = msg.Id === clientId;

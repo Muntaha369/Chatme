@@ -37,7 +37,7 @@ try {
 //     $or: [
 //       { senderId: name },
 //       { receiverId: name }
-//     ]});
+//     ]}).sort({ timestamp: 1 });
 //     res.status(201).json({messages})
 //   } catch (error) {
 //     res.status(500).json({msg:"Something is wrong here"})
