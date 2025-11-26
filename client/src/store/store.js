@@ -56,3 +56,8 @@ export const useContact = create((set) => ({
   contact: [],
   setContact: (newContact) => set((state) => ({contact: [newContact, ...state.contact] }))
 }));
+
+export const useReceiver = create((set) => ({
+  receiverName: '',
+  setReceiverName: (receiver) => set(() => ({receiverName: receiver}))
+}));

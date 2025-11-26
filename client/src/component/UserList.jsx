@@ -1,16 +1,17 @@
 import React, { useState,useEffect } from 'react';
+import axios from 'axios';
+import {motion} from 'framer-motion'
+import { Zap, PlusCircle } from 'lucide-react'; 
+import ToggleButton from './ToggleButton';
 import { multiSocket } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
 import { useReciverId } from '../store/store'; 
-import { Zap, PlusCircle } from 'lucide-react'; 
 import { useDataroom } from '../store/store';
 import { useUserID } from '../store/store';
 import { useUser } from '../store/store';
-import {motion} from 'framer-motion'
-import ToggleButton from './ToggleButton';
 import { useToggler } from '../store/store';
-import axios from 'axios';
 import { useContact } from '../store/store';
- 
+import { useReceiver } from '../store/store';
+
 const UserList = () => {
   const { toggler } = useToggler()
   // const { user } = useUser()
@@ -23,7 +24,7 @@ const UserList = () => {
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
   const [changedData, setChangedData] = useState([])
-  const [User, setUser] = useState('')
+  const {receiverName, setReceiverName} = useReceiver()
   const {dataRoom} = useDataroom()
 
   
@@ -92,8 +93,8 @@ const modalVariants = {
   }, [])
 
   useEffect(() => {
-    // console.log("now you can see my friend",newAlluser)
-  }, [newAlluser])
+    console.log("now you can see my friend",receiverName)
+  }, [newAlluser, receiverName])
 
    {/* Ensured socket array is getting updated */}
   useEffect(()=>{
@@ -154,7 +155,7 @@ const modalVariants = {
   };
 
 
-  const isRoomActive = (roomName) => User === roomName;
+  const isRoomActive = (roomName) => receiverName === roomName;
 
   return (
     <div className='w-full p-6 flex flex-col items-start space-y-4 max-w-sm mx-auto'>
@@ -302,7 +303,7 @@ const modalVariants = {
           <div 
             onClick={() => {
               manageContactsClick(val)
-              setUser(val)
+              setReceiverName(val)
               localStorage.setItem('reciver',val)
             }}
             key={val} 

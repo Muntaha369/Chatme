@@ -10,6 +10,7 @@ import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './store/store';
 import { useUserID } from './store/store';
+import { useReceiver } from './store/store';
 import axios from 'axios';
 
 // The socket connection should be established outside the component
@@ -25,13 +26,15 @@ const App = () => {
   const { setDataRoom } = useDataroom();
   const { setSockets } = multiSocket();
   const { setUserID } = useUserID();
-
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState('');
   const [messages, setMessages] = useState([]);
   const [chatHistory, setChatHistory] = useState([])
   const [newUserId, setNewUserId] = useState('');
   const [sender, setSender] = useState('')
+  const {receiverName} = useReceiver()
+  
+  
 
   useEffect(()=>{console.log("sender is set")},[sender])
 
@@ -163,7 +166,7 @@ const App = () => {
   };
 
 
-  const currentChatMessages = messages
+  const currentChatMessages = messages.toReversed()
     .filter(msg => {
       const currentRecipient = socketID;
 
@@ -215,9 +218,12 @@ const App = () => {
         </header>
 
         {/* Message Display Area */}
-        <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col-reverse'>
+        <div className='flex-1 p-4 space-y-4 overflow-y-auto flex flex-col'>
           
          {
+
+          receiverName === targetReceiver &&
+
            chatHistory
            .filter((val) => 
               (val.senderId === sender && val.receiverId === targetReceiver) ||
