@@ -286,7 +286,7 @@ const App = () => {
                 >
                   <p className='font-bold text-xs opacity-80 mb-1'>
                     {/* Display sender's ID, and note if it's a room */}
-                    {isSender ? 'You' : `User: ${msg.Id}`} 
+                    {isSender ? 'You' : `User: ${sender}`} 
                     {isRoom && (
                         <span className='ml-2 text-yellow-300 font-normal'>
                             (Room)

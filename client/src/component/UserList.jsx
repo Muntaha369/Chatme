@@ -16,13 +16,14 @@ const UserList = () => {
   const { toggler } = useToggler()
   // const { user } = useUser()
   // const { userID } = useUserID();
-  const { contact, setContact } = useContact()
-  const { Sockets } = multiSocket(); 
-  const { socketID, setSocketID } = useReciverId();
   const [newRoomName, setNewRoomName] = useState('');
   const [newAlluser, setnewAlluser] = useState({})
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
+  const [participants, setParticipants] = useState([])
+  const { contact, setContact } = useContact()
+  const { Sockets } = multiSocket(); 
+  const { socketID, setSocketID } = useReciverId();
   const [changedData, setChangedData] = useState([])
   const {receiverName, setReceiverName} = useReceiver()
   const {dataRoom} = useDataroom()
@@ -156,6 +157,11 @@ const modalVariants = {
     }
   };
 
+  const filterParticipants = (val)=>{
+    const filter = participants.filter((value)=>value!=val);
+    setParticipants(filter)
+  }
+
 
   const isRoomActive = (roomName) => receiverName === roomName;
 
@@ -250,8 +256,20 @@ const modalVariants = {
                               {
                                 toggler && (
                                   <div className=' flex justify-center items-center flex-col' >
-                                  <input placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4' type="text" />
-                                  <input placeholder='Enter participants...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt mb-4' type="text" />
+                                  <input placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-3 mb-3' type="text" />
+                                  <input 
+                                  onChange={handleChange}
+                                  placeholder='Enter participants...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt mb-2' type="text" />
+                                  <div className='flex w-full space-x-1.5'>
+                                    {
+                                      participants.map((val,idx)=>(
+                                      <p key={idx}
+                                        onClick={()=>filterParticipants(val)}
+                                        className='bg-blue-800 hover:bg-red-800 hover:opacity-70 transition-all text-xs mb-2 rounded-lg p-1 hover:cursor-pointer'>
+                                        {val}
+                                      </p>))
+                                    }
+                                  </div>
                                   <div className='w-full'>
                                     <button
                                     onClick={()=>setModelOpen(false)}
@@ -261,6 +279,17 @@ const modalVariants = {
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
                                                 transition-all duration-150 ease-in-out'>
                                       Create</button>
+                                  </div>
+                                  <div className='bg-gray-800 rounded-lg p-2 space-y-1 max-h-48 overflow-y-auto custom-scrollbar w-full mt-4 mb-4'>
+                                    {changedData.map((data, index) => (
+                                      <p
+                                        key={index} // Added a key, which is important for list rendering
+                                        className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
+                                        onClick={()=>setParticipants((prev)=>[...prev, data])}
+                                      >
+                                        {data}
+                                      </p>
+                                    ))}
                                   </div>
                                 </div>
                                 )
