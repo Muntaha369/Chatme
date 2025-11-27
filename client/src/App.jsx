@@ -129,7 +129,7 @@ const App = () => {
   }, [setSockets, setDataRoom, user]); 
 
 
-  const messageEmitter = (e) => {
+  const messageEmitter = async(e) => {
     e.preventDefault();
     
     const currentRecipient = socketID; 
@@ -137,9 +137,16 @@ const App = () => {
     if (currentRecipient && currentRecipient.trim() !== '') {
       if (message.trim()) {
         const newMessage = { Id: clientId, message: message.trim(), reciverId: currentRecipient.trim() };
-        
+        const payload = {
+          senderId:sender, 
+          receiverId:targetReceiver, 
+          messageText:message.trim(), 
+          messageType:currentRecipient.includes('+room') ? 'room' : 'private'
+        }
         socket.emit('send_message', newMessage);
         console.log('EMIT:', newMessage);
+        console.log("this is", sender, targetReceiver, newMessage.message)
+        await axios.post('http://localhost:3002/api/all/addMessage', payload)
         
         if(currentRecipient.includes('+room')){
           setMessages((prevMessages)=>[...prevMessages])
@@ -308,7 +315,7 @@ const App = () => {
               type='submit'
               className='bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 shadow-md'
             >
-              Send to {socketID ? socketID.substring(0, 8) + '...' : 'Global'}
+              Send to {targetReceiver}
             </button>
           </form>
         </div>
