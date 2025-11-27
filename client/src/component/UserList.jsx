@@ -151,6 +151,8 @@ const modalVariants = {
     const socket = Sockets.find((s) => s.data === val);
     if (socket) {
       setSocketID(socket.socketId);
+    }else{
+      setSocketID(null)
     }
   };
 

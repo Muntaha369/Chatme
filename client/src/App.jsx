@@ -87,7 +87,7 @@ const App = () => {
     
     const receiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log('Received message:', data.message);
+      console.log('Received message:', data);
     };
     
     const roomReceiveMessageHandler = (data) => {
@@ -139,13 +139,13 @@ const App = () => {
         const newMessage = { Id: clientId, message: message.trim(), reciverId: currentRecipient.trim() };
         const payload = {
           senderId:sender, 
-          receiverId:targetReceiver, 
+          receiverId:receiverName, 
           messageText:message.trim(), 
           messageType:currentRecipient.includes('+room') ? 'room' : 'private'
         }
         socket.emit('send_message', newMessage);
         console.log('EMIT:', newMessage);
-        console.log("this is", sender, targetReceiver, newMessage.message)
+        console.log("this is", sender, receiverName, newMessage.message)
         await axios.post('http://localhost:3002/api/all/addMessage', payload)
         
         if(currentRecipient.includes('+room')){
@@ -176,7 +176,7 @@ const App = () => {
   const currentChatMessages = messages.toReversed()
     .filter(msg => {
       const currentRecipient = socketID;
-
+      console.log("msg", msg.Id, "clientId", clientId, "reciver", msg.reciverId, "currentreci", currentRecipient)
       const isMyMessageToTarget = msg.Id === clientId && msg.reciverId === currentRecipient;
       const isMessageFromTarget = msg.Id === currentRecipient && msg.reciverId === clientId;
       const isRoomMessageToCurrentRoom = msg.reciverId === currentRecipient; 
@@ -189,7 +189,7 @@ const App = () => {
     })
     .slice() // Create a copy
 
-    const targetReceiver = localStorage.getItem('reciver');
+    // const targetReceiver = localStorage.getItem('reciver');
 
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
@@ -229,12 +229,12 @@ const App = () => {
           
          {
 
-          receiverName === targetReceiver &&
+          // receiverName === targetReceiver &&
 
            chatHistory
            .filter((val) => 
-              (val.senderId === sender && val.receiverId === targetReceiver) ||
-             (val.senderId === targetReceiver && val.receiverId === sender)
+              (val.senderId === sender && val.receiverId === receiverName) ||
+             (val.senderId === receiverName && val.receiverId === sender)
            )
           .map((val, idx) => {
             // Check if I am the sender
@@ -315,7 +315,7 @@ const App = () => {
               type='submit'
               className='bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 shadow-md'
             >
-              Send to {targetReceiver}
+              Send to {receiverName}
             </button>
           </form>
         </div>
