@@ -30,6 +30,15 @@ try {
 }
 }
 
+const addMessage = async(req, res)=>{
+  const {senderId, receiverId, messageText, messageType} = req.body;
+
+  const date = new Date().toISOString();
+  const newMessage = await Messages.insertOne({senderId, receiverId, messageText, timestamp:`${date}`, messageType})
+
+  res.json({msg: newMessage})
+}
+
 // const GetMessage = async(req,res)=>{
 //   try {
 //     const {name} = req.body;
@@ -44,4 +53,4 @@ try {
 //   }
 // }
 
-module.exports = {GetUsers, UpdateContacts}
+module.exports = {GetUsers, UpdateContacts, addMessage}

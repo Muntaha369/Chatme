@@ -18,7 +18,7 @@ const messageSchema = new mongoose.Schema({
     },
     
     timestamp: {
-        type: Date,
+        type: String,
         default: Date.now,
         index: true // Indexing this field is CRITICAL for chronological sorting
     },
