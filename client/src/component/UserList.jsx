@@ -6,7 +6,6 @@ import ToggleButton from './ToggleButton';
 import { multiSocket } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
 import { useReciverId } from '../store/store'; 
 import { useDataroom } from '../store/store';
-import { useUserID } from '../store/store';
 import { useUser } from '../store/store';
 import { useToggler } from '../store/store';
 import { useContact } from '../store/store';
@@ -14,7 +13,6 @@ import { useReceiver } from '../store/store';
 
 const UserList = () => {
   const { toggler } = useToggler()
-  // const { user } = useUser()
   // const { userID } = useUserID();
   const [newRoomName, setNewRoomName] = useState('');
   const [newAlluser, setnewAlluser] = useState({})
@@ -27,7 +25,7 @@ const UserList = () => {
   const [changedData, setChangedData] = useState([])
   const {receiverName, setReceiverName} = useReceiver()
   const {dataRoom} = useDataroom()
-
+  const { user } = useUser();
   
   // Log the current active user ID for debugging
   // console.log("Current recipient:", socketID);
@@ -275,6 +273,10 @@ const modalVariants = {
                                     onClick={()=>setModelOpen(false)}
                                     className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
+                                      onClick={()=>{
+                                         console.log(user);
+                                        setParticipants((prev)=>[user, ...prev])
+                                      }}
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
                                                 transition-all duration-150 ease-in-out'>
