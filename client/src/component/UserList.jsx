@@ -24,6 +24,8 @@ const UserList = () => {
   const { socketID, setSocketID } = useReciverId();
   const [changedData, setChangedData] = useState([])
   const {receiverName, setReceiverName} = useReceiver()
+  const [roomName, setRoomName] = useState('')
+  const [optionOpacity, setOptionOpacity] = useState('')
   const {dataRoom} = useDataroom()
   const { user } = useUser();
   
@@ -102,12 +104,12 @@ const modalVariants = {
   
   
 
-  useEffect(() => {
-    if (dataRoom && dataRoom.length > 0) {
-        // Use the store's data to initialize the local room list
-        setRoomList(dataRoom); 
-    }
-  }, [dataRoom]); 
+  // useEffect(() => {
+  //   if (dataRoom && dataRoom.length > 0) {
+  //       // Use the store's data to initialize the local room list
+  //       setRoomList(dataRoom); 
+  //   }
+  // }, [dataRoom]); 
 
   useEffect(()=>{
     console.log(modelOpen)
@@ -254,7 +256,10 @@ const modalVariants = {
                               {
                                 toggler && (
                                   <div className=' flex justify-center items-center flex-col' >
-                                  <input placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-3 mb-3' type="text" />
+                                  <input 
+                                  value={roomName}
+                                  onChange={(e)=>setRoomName(e.target.value)}
+                                  placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-3 mb-3' type="text" />
                                   <input 
                                   onChange={handleChange}
                                   placeholder='Enter participants...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt mb-2' type="text" />
@@ -273,10 +278,7 @@ const modalVariants = {
                                     onClick={()=>setModelOpen(false)}
                                     className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
-                                      onClick={()=>{
-                                         console.log(user);
-                                        // setParticipants((prev)=>[user, ...prev])
-                                      }}
+                                      onClick={()=>setRoomList((prev)=>[...prev, roomName])}
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
                                                 transition-all duration-150 ease-in-out'>
@@ -284,13 +286,26 @@ const modalVariants = {
                                   </div>
                                   <div className='bg-gray-800 rounded-lg p-2 space-y-1 max-h-48 overflow-y-auto custom-scrollbar w-full mt-4 mb-4'>
                                     {changedData.map((data, index) => (
-                                      <p
+                                      <div
+                                        onMouseOver={()=>setOptionOpacity(index)}
+                                        onMouseLeave={()=>setOptionOpacity(false)}
                                         key={index} // Added a key, which is important for list rendering
-                                        className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
-                                        // onClick={()=>setParticipants((prev)=>[...prev, data])}
+                                        className='text-gray-200 flex flex-row items-center justify-between p-3 rounded-md hover:bg-gray-700 h-14 cursor-pointer transition-colors duration-150 ease-in-out'
+                                        onClick={()=>setParticipants((prev)=>[...prev, data])}
                                       >
-                                        {data}
-                                      </p>
+                                        <p>{data}</p>
+                                        {
+                                          optionOpacity === index && 
+                                        <div className='flex flex-row justify-center items-center space-x-2'>
+                                          <div className='bg-black text-white hover:bg-white hover:text-black px-4 py-1 rounded-xl transition-all duration-500 ease-in-out'>
+                                            Co-Admin
+                                          </div>
+                                          <div className='bg-black text-white hover:bg-white hover:text-black px-4 py-1 rounded-xl transition-all duration-500 ease-in-out'>
+                                            Participant
+                                          </div>
+                                        </div>
+                                        }
+                                      </div>
                                     ))}
                                   </div>
                                 </div>
