@@ -275,7 +275,7 @@ const modalVariants = {
                                     <button 
                                       onClick={()=>{
                                          console.log(user);
-                                        setParticipants((prev)=>[user, ...prev])
+                                        // setParticipants((prev)=>[user, ...prev])
                                       }}
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
@@ -287,7 +287,7 @@ const modalVariants = {
                                       <p
                                         key={index} // Added a key, which is important for list rendering
                                         className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
-                                        onClick={()=>setParticipants((prev)=>[...prev, data])}
+                                        // onClick={()=>setParticipants((prev)=>[...prev, data])}
                                       >
                                         {data}
                                       </p>

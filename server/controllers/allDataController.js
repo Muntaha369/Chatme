@@ -39,6 +39,28 @@ const addMessage = async(req, res)=>{
   res.json({msg: newMessage})
 }
 
+const createRoom = async(req, res)=>{
+  const {admin, coAdmin, participants, roomname} = req.body;
+
+  const allParticipants = [admin, ...coAdmin, ...participants]
+
+  allParticipants.map(async(val)=>{
+    const newUser = await User.findOneAndUpdate(
+      {username: val},
+      {$push:{rooms:{
+                      roomname,
+                      admin,
+                      coAdmin,
+                      participants
+      }}}
+
+    )
+    console.log(newUser.username,"YEP THIS IS THE USER")
+  })
+
+  res.json({msg:allParticipants})
+}
+
 // const GetMessage = async(req,res)=>{
 //   try {
 //     const {name} = req.body;
@@ -53,4 +75,4 @@ const addMessage = async(req, res)=>{
 //   }
 // }
 
-module.exports = {GetUsers, UpdateContacts, addMessage}
+module.exports = {GetUsers, UpdateContacts, addMessage, createRoom}

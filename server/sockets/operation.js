@@ -30,6 +30,7 @@ module.exports = async (socket, io)=>{
   socket.on("send_message", (data) => {
     console.log(`SERVER RECEIVED from`,data);
     let ID = data.reciverId;
+    // console.log(ID)
     if(ID.includes('+room')){
       console.log("going throung",data.reciverId)
 

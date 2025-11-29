@@ -133,6 +133,7 @@ const App = () => {
     e.preventDefault();
     
     const currentRecipient = socketID; 
+    console.log("this i the type",socketID)
 
     if (currentRecipient && currentRecipient.trim() !== '') {
       if (message.trim()) {
