@@ -42,6 +42,13 @@ const addMessage = async(req, res)=>{
 const createRoom = async(req, res)=>{
   const {admin, coAdmin, participants, roomname} = req.body;
 
+  const roomExists = await User.findOne({ "rooms.roomname": roomname });
+  console.log(roomExists)
+
+  if(roomExists){
+    return res.json({msg:"room with this name already exist please choose the unique one"})
+  }
+
   const allParticipants = [admin, ...coAdmin, ...participants]
 
   allParticipants.map(async(val)=>{
