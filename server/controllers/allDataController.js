@@ -16,6 +16,14 @@ try {
     const user = await User.findOne({email:clientName})
     return res.status(201).json({msg:user.contacts})
   }
+
+    const ContactExist = await User.findOne({email:clientName});
+
+    const sameContact = ContactExist.contacts.find((c)=>c === contacts)
+
+    if(sameContact){
+      res.json({msg:"Contact already exist"})
+    }
  
     const updatedContacts = await User.findOneAndUpdate(
       { email: clientName },  
