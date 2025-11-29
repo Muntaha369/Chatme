@@ -19,6 +19,7 @@ const UserList = () => {
   const [RoomList, setRoomList] = useState([])
   const [modelOpen, setModelOpen] = useState(false)
   const [participants, setParticipants] = useState([])
+  const [coAdmins, setCoAdmins] = useState([])
   const { contact, setContact } = useContact()
   const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
@@ -26,7 +27,7 @@ const UserList = () => {
   const {receiverName, setReceiverName} = useReceiver()
   const [roomName, setRoomName] = useState('')
   const [optionOpacity, setOptionOpacity] = useState('')
-  const {dataRoom} = useDataroom()
+  const {dataRoom, setDataRoom} = useDataroom()
   const { user } = useUser();
   
   // Log the current active user ID for debugging
@@ -104,16 +105,17 @@ const modalVariants = {
   
   
 
-  // useEffect(() => {
-  //   if (dataRoom && dataRoom.length > 0) {
-  //       // Use the store's data to initialize the local room list
-  //       setRoomList(dataRoom); 
-  //   }
-  // }, [dataRoom]); 
+  useEffect(() => {
+    if (dataRoom && dataRoom.length > 0) {
+        // Use the store's data to initialize the local room list
+        console.log("Data room is updated my wigga",dataRoom)
+        setRoomList(dataRoom); 
+    }
+  }, [dataRoom]); 
 
-  useEffect(()=>{
-    console.log(modelOpen)
-  },[modelOpen])
+  // useEffect(()=>{
+  //   console.log(modelOpen)
+  // },[modelOpen])
 
   const handleCreateRoom = (e) => {
     e.preventDefault();
@@ -158,6 +160,8 @@ const modalVariants = {
   };
 
   const filterParticipants = (val)=>{
+    const filterAdmin = coAdmins.filter((value)=>value!=val)
+    setCoAdmins(filterAdmin)
     const filter = participants.filter((value)=>value!=val);
     setParticipants(filter)
   }
@@ -265,6 +269,14 @@ const modalVariants = {
                                   placeholder='Enter participants...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt mb-2' type="text" />
                                   <div className='flex w-full space-x-1.5'>
                                     {
+                                      coAdmins.map((val,idx)=>(
+                                      <p key={idx}
+                                        onClick={()=>filterParticipants(val)}
+                                        className='bg-yellow-800 hover:bg-red-800 hover:opacity-70 transition-all text-xs mb-2 rounded-lg p-1 hover:cursor-pointer'>
+                                        {val}
+                                      </p>))
+                                    }
+                                    {
                                       participants.map((val,idx)=>(
                                       <p key={idx}
                                         onClick={()=>filterParticipants(val)}
@@ -278,7 +290,7 @@ const modalVariants = {
                                     onClick={()=>setModelOpen(false)}
                                     className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
-                                      onClick={()=>setRoomList((prev)=>[...prev, roomName])}
+                                      onClick={()=>setDataRoom(roomName)}
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
                                                 transition-all duration-150 ease-in-out'>
@@ -291,18 +303,21 @@ const modalVariants = {
                                         onMouseLeave={()=>setOptionOpacity(false)}
                                         key={index} // Added a key, which is important for list rendering
                                         className='text-gray-200 flex flex-row items-center justify-between p-3 rounded-md hover:bg-gray-700 h-14 cursor-pointer transition-colors duration-150 ease-in-out'
-                                        onClick={()=>setParticipants((prev)=>[...prev, data])}
                                       >
                                         <p>{data}</p>
                                         {
                                           optionOpacity === index && 
                                         <div className='flex flex-row justify-center items-center space-x-2'>
-                                          <div className='bg-black text-white hover:bg-white hover:text-black px-4 py-1 rounded-xl transition-all duration-500 ease-in-out'>
+                                          <button 
+                                          onClick={()=>setCoAdmins((prev)=>[...prev, data])}
+                                          className='hover:cursor-pointer bg-black text-white hover:bg-white hover:text-black px-4 py-1 rounded-xl transition-all duration-500 ease-in-out'>
                                             Co-Admin
-                                          </div>
-                                          <div className='bg-black text-white hover:bg-white hover:text-black px-4 py-1 rounded-xl transition-all duration-500 ease-in-out'>
+                                          </button>
+                                          <button 
+                                          onClick={()=>setParticipants((prev)=>[...prev, data])}
+                                          className='hover:cursor-pointer bg-black text-white hover:bg-white hover:text-black px-4 py-1 rounded-xl transition-all duration-500 ease-in-out'>
                                             Participant
-                                          </div>
+                                          </button>
                                         </div>
                                         }
                                       </div>

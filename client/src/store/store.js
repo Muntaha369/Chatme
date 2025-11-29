@@ -27,7 +27,20 @@ export const useReciverId = create((set)=>({
 export const useDataroom = create((set)=>({
   dataRoom:[],
   // preferred API name used elsewhere in code:
-  setDataRoom: (socket) => set((state) => ({ dataRoom: [socket, ...state.dataRoom] })),
+  // setDataRoom: (socket) => set((state) => ({ dataRoom: [socket, ...state.dataRoom] }))
+  setDataRoom: (newRoom) => set((state) => {
+    const exists = state.dataRoom.some((s)=> s === newRoom)
+
+    if(exists){
+      return
+    }
+
+    return {
+      dataRoom:[newRoom, ...state.dataRoom]
+    }
+
+  })
+
   // // keep original name as alias for backwards-compatibility
   // setDataroom: (socket) => set((state) => ({ dataRoom: [socket, ...state.dataRoom] }))
 }))
