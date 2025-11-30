@@ -171,7 +171,7 @@ const modalVariants = {
     const newSocketID = roomName+"+room"
     const upDatedParticipants = [...coAdmins,...participants]
   
-    setDataRoom(newSocketID);
+    // setDataRoom(newSocketID);
     setSocketID(newSocketID)
     console.log("They are the participants",socketID)
     roomJoin(upDatedParticipants, newSocketID)

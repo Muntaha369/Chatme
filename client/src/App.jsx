@@ -108,7 +108,16 @@ const App = () => {
     }
 
     const handleInitialInvitation = (data)=>{
-      console.log("yeah we got invited",data)
+      const allParticipants = data.participants;
+      // console.log("This are all participants", user)
+      const exists = allParticipants.find((val)=>val === user)
+      if(exists){
+        setDataRoom(data.roomName)
+        socket.emit("join_room", data.roomName); 
+        console.log("You are the part",user);
+      }else{
+        console.log("sorry you are beta",user)
+      }
     }
     
     socket.emit("send_username",user);
@@ -119,8 +128,8 @@ const App = () => {
     socket.on("Chat_history", handleChathistory)
     socket.on('receive_message', receiveMessageHandler);
     socket.on('room_receive_message', roomReceiveMessageHandler); 
-    socket.on('room_invitation', handleRoomInvitation)
-    socket.on('room_invitationInitial',handleInitialInvitation)
+    socket.on('room_invitation', handleRoomInvitation);
+    socket.on('room_invitationInitial',handleInitialInvitation);
 
     return () => {
       socket.off('hello',handleHello);
@@ -131,7 +140,7 @@ const App = () => {
       socket.off('receive_message', receiveMessageHandler);
       socket.off('room_receive_message', roomReceiveMessageHandler); 
       socket.off('room_invitation',handleRoomInvitation);
-      socket.off('room_invitationInitial',handleInitialInvitation)
+      socket.off('room_invitationInitial',handleInitialInvitation);
     };
   }, [setSockets, setDataRoom, user]); 
 
@@ -157,7 +166,8 @@ const App = () => {
         await axios.post('http://localhost:3002/api/all/addMessage', payload)
         
         if(currentRecipient.includes('+room')){
-          setMessages((prevMessages)=>[...prevMessages])
+          console.log("message is set")
+          setMessages((prevMessages)=>[newMessage,...prevMessages])
         }
         else{
           setMessages((prevMessages) => [newMessage, ...prevMessages]);
@@ -170,7 +180,7 @@ const App = () => {
 
   const handleNewuserSubmit = (e) => {
     e.preventDefault();
-    const data = { reciverId: newUserId.trim(), roomName: socketID.trim(), senderId: clientId }; 
+    const data = { reciverId: newUserId.trim(), roomName: socketID.trim(), senderId: clientId };
     
     if (!socketID.includes("+room")) {
         alert("Please select a valid chat room before inviting a user.");
@@ -308,7 +318,8 @@ const App = () => {
                 >
                   <p className='font-bold text-xs opacity-80 mb-1'>
                     {/* Display sender's ID, and note if it's a room */}
-                    {isSender ? 'You' : `User: ${sender}`} 
+                    {!isRoom || isSender ? 'You' : `User: ${receiverName}`} 
+                    {isRoom && isSender ? 'You' : `User: ${msg.Id}`} 
                     {isRoom && (
                         <span className='ml-2 text-yellow-300 font-normal'>
                             (Room)

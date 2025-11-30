@@ -32,7 +32,7 @@ module.exports = async (socket, io)=>{
     let ID = data.reciverId;
     // console.log(ID)
     if(ID.includes('+room')){
-      console.log("going throung",data.reciverId)
+      console.log("going throung",data)
 
       // Which room to recive
       io.to(data.reciverId).emit("room_receive_message",data)
@@ -54,6 +54,7 @@ module.exports = async (socket, io)=>{
   socket.on("room_reqInitial",(data)=>{
     // const roomParticipants = data.participants
     // const room = data.roomName
+    socket.join(data.roomName)
     io.emit("room_invitationInitial", data)
   })
 
