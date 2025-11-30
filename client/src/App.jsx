@@ -106,6 +106,10 @@ const App = () => {
       setSockets(change);
       console.log("ThreewayHandshake", data);
     }
+
+    const handleInitialInvitation = (data)=>{
+      console.log("yeah we got invited",data)
+    }
     
     socket.emit("send_username",user);
     socket.on('hello', handleHello);
@@ -116,6 +120,7 @@ const App = () => {
     socket.on('receive_message', receiveMessageHandler);
     socket.on('room_receive_message', roomReceiveMessageHandler); 
     socket.on('room_invitation', handleRoomInvitation)
+    socket.on('room_invitationInitial',handleInitialInvitation)
 
     return () => {
       socket.off('hello',handleHello);
@@ -126,6 +131,7 @@ const App = () => {
       socket.off('receive_message', receiveMessageHandler);
       socket.off('room_receive_message', roomReceiveMessageHandler); 
       socket.off('room_invitation',handleRoomInvitation);
+      socket.off('room_invitationInitial',handleInitialInvitation)
     };
   }, [setSockets, setDataRoom, user]); 
 
@@ -174,6 +180,18 @@ const App = () => {
     setNewUserId('');
   };
 
+  const handleRoomJoin = (participants, newRoomName) =>{
+    const data = { participants, roomName: newRoomName.trim(), senderId: clientId }; 
+
+        if (!newRoomName.includes("+room")) {
+        alert("Please select a valid chat room before inviting a user.");
+        return;
+    }
+
+    socket.emit('room_reqInitial', data);
+    // console.log("this is the val", participants)
+    
+  }
 
   const currentChatMessages = messages.toReversed()
     .filter(msg => {
@@ -195,7 +213,8 @@ const App = () => {
 
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
-      <div className='h-full flex justify-center bg-gray-900 sm: w-[100%] md:w-[40%] lg:w-[30%]'><UserList/></div>
+      <div className='h-full flex justify-center bg-gray-900 sm: w-[100%] md:w-[40%] lg:w-[30%]'>
+        <UserList roomJoin = {handleRoomJoin} /></div>
       <div className=' sm: w-[0%] md:w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
         
         <header className='p-4 bg-gray-800 text-white shadow-md'>

@@ -51,6 +51,12 @@ module.exports = async (socket, io)=>{
     socket.to(data.reciverId).emit("room_invitation",data)
   })
 
+  socket.on("room_reqInitial",(data)=>{
+    // const roomParticipants = data.participants
+    // const room = data.roomName
+    io.emit("room_invitationInitial", data)
+  })
+
   // other user joining a room
   socket.on("join_room",(data)=>{
     socket.join(data)

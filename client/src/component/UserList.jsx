@@ -11,7 +11,7 @@ import { useToggler } from '../store/store';
 import { useContact } from '../store/store';
 import { useReceiver } from '../store/store';
 
-const UserList = () => {
+const UserList = ({roomJoin}) => {
   const { toggler } = useToggler()
   // const { userID } = useUserID();
   const [newRoomName, setNewRoomName] = useState('');
@@ -166,6 +166,16 @@ const modalVariants = {
     setParticipants(filter)
   }
 
+  const handleNewRoom = ()=>{
+
+    const newSocketID = roomName+"+room"
+    const upDatedParticipants = [...coAdmins,...participants]
+  
+    setDataRoom(newSocketID);
+    setSocketID(newSocketID)
+    console.log("They are the participants",socketID)
+    roomJoin(upDatedParticipants, newSocketID)
+  }
 
   const isRoomActive = (roomName) => receiverName === roomName;
 
@@ -219,41 +229,41 @@ const modalVariants = {
                               {
                                 !toggler && (
                                 <div className=' flex justify-center items-center flex-col'>
-  <input
-    onChange={handleChange}
-    placeholder='Enter a Chat...'
-    className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4'
-    type='text'
-  />
-  <div className='w-full'>
-    <button
-      onClick={() => setModelOpen(false)}
-      className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'
-    >
-      Cancel
-    </button>
-    <button
-      className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white
-                                  hover:cursor-pointer hover:bg-indigo-700/95
-                                  transition-all duration-150 ease-in-out'
-    >
-      Create
-    </button>
-  </div>
+                                  <input
+                                    onChange={handleChange}
+                                    placeholder='Enter a Chat...'
+                                    className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-4 mb-4'
+                                    type='text'
+                                  />
+                                  <div className='w-full'>
+                                    <button
+                                      onClick={() => setModelOpen(false)}
+                                      className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white
+                                                                  hover:cursor-pointer hover:bg-indigo-700/95
+                                                                  transition-all duration-150 ease-in-out'
+                                    >
+                                      Create
+                                    </button>
+                                  </div>
 
-  {/* STYLING MATCHED: Changed bg-zinc-800 to bg-gray-800 and mt-1 to mt-4 mb-4 */}
-  <div className='bg-gray-800 rounded-lg p-2 space-y-1 max-h-48 overflow-y-auto custom-scrollbar w-full mt-4 mb-4'>
-    {changedData.map((data, index) => (
-      <p
-        key={index} // Added a key, which is important for list rendering
-        className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
-        onClick={()=>AddContact(data)}
-      >
-        {data}
-      </p>
-    ))}
-  </div>
-</div>
+                                  {/* STYLING MATCHED: Changed bg-zinc-800 to bg-gray-800 and mt-1 to mt-4 mb-4 */}
+                                  <div className='bg-gray-800 rounded-lg p-2 space-y-1 max-h-48 overflow-y-auto custom-scrollbar w-full mt-4 mb-4'>
+                                    {changedData.map((data, index) => (
+                                      <p
+                                        key={index} // Added a key, which is important for list rendering
+                                        className='text-gray-200 p-3 rounded-md hover:bg-gray-700 cursor-pointer transition-colors duration-150 ease-in-out'
+                                        onClick={()=>AddContact(data)}
+                                      >
+                                        {data}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
                               )
                               }
 
@@ -290,8 +300,9 @@ const modalVariants = {
                                     onClick={()=>setModelOpen(false)}
                                     className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
-                                      onClick={()=>setDataRoom(roomName+"+room")}
-                                      className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
+                                      onClick={handleNewRoom}
+                                      className='w-[50%] py-2 bg-indigo-500 rounded-r-lg 
+                                                text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
                                                 transition-all duration-150 ease-in-out'>
                                       Create</button>
