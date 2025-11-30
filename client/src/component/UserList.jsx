@@ -336,7 +336,9 @@ const modalVariants = {
         RoomList.map((val, idx)=>(
           <div
           onClick={() => {
-            setSocketID(val)       
+            setSocketID(val+"+room")
+            setReceiverName(val)     
+            localStorage.setItem('reciver',val)
           }}
           key = {idx}
           className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 

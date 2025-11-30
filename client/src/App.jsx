@@ -120,6 +120,7 @@ const App = () => {
     return () => {
       socket.off('hello',handleHello);
       socket.off('emitNewlyJoined',handleEmitall);
+      socket.off('previousFRnewSock',handlePreFRnewSock)
       socket.off("all_userData",handleUserData); 
       socket.off("Chat_history",handleUserData); 
       socket.off('receive_message', receiveMessageHandler);
