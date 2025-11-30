@@ -290,7 +290,7 @@ const modalVariants = {
                                     onClick={()=>setModelOpen(false)}
                                     className='w-[50%] py-2 bg-gray-700 rounded-l-lg text-md font-semibold hover:cursor-pointer hover:bg-gray-700/90 transition-all duration-150 ease-in-out'>Cancel</button>
                                     <button 
-                                      onClick={()=>setDataRoom(roomName)}
+                                      onClick={()=>setDataRoom(roomName+"+room")}
                                       className='w-[50%] py-2 bg-indigo-500 rounded-r-lg text-md font-semibold text-white 
                                                 hover:cursor-pointer hover:bg-indigo-700/95 
                                                 transition-all duration-150 ease-in-out'>
@@ -336,7 +336,7 @@ const modalVariants = {
         RoomList.map((val, idx)=>(
           <div
           onClick={() => {
-            setSocketID(val+"+room")
+            setSocketID(val)
             setReceiverName(val)     
             localStorage.setItem('reciver',val)
           }}

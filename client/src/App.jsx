@@ -274,6 +274,7 @@ const App = () => {
           {currentChatMessages.map((msg, index) => {
 
             const isSender = msg.Id === clientId;
+            console.log(msg)
             const isRoom = msg.reciverId && (msg.reciverId.includes("+room") || msg.reciverId.includes("room"));
             
             return (
