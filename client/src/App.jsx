@@ -153,13 +153,14 @@ const App = () => {
 
     if (currentRecipient && currentRecipient.trim() !== '') {
       if (message.trim()) {
-        const newMessage = { Id: clientId, message: message.trim(), reciverId: currentRecipient.trim() };
+        const newMessage = { Id: clientId, message: message.trim(), reciverId: currentRecipient.trim(), senderName:user };
         const payload = {
           senderId:sender, 
           receiverId:receiverName, 
           messageText:message.trim(), 
           messageType:currentRecipient.includes('+room') ? 'room' : 'private'
         }
+        // console.log("Damming",user)
         socket.emit('send_message', newMessage);
         console.log('EMIT:', newMessage);
         console.log("this is", sender, receiverName, newMessage.message)
@@ -167,7 +168,7 @@ const App = () => {
         
         if(currentRecipient.includes('+room')){
           console.log("message is set")
-          setMessages((prevMessages)=>[newMessage,...prevMessages])
+          setMessages((prevMessages)=>[...prevMessages]);
         }
         else{
           setMessages((prevMessages) => [newMessage, ...prevMessages]);
@@ -305,7 +306,7 @@ const App = () => {
             const isSender = msg.Id === clientId;
             console.log(msg)
             const isRoom = msg.reciverId && (msg.reciverId.includes("+room") || msg.reciverId.includes("room"));
-            
+            console.log(isRoom)
             return (
               <div
                 key={index}
@@ -318,8 +319,9 @@ const App = () => {
                 >
                   <p className='font-bold text-xs opacity-80 mb-1'>
                     {/* Display sender's ID, and note if it's a room */}
-                    {!isRoom || isSender ? 'You' : `User: ${receiverName}`} 
-                    {isRoom && isSender ? 'You' : `User: ${msg.Id}`} 
+                    {/* why the below line is not working ? when its not room it should not render */}
+                    { isRoom && (isSender ? 'You' : `User: ${msg.senderName}`)}
+                    { !isRoom &&(isSender ? 'You' : `User: ${receiverName}`)} 
                     {isRoom && (
                         <span className='ml-2 text-yellow-300 font-normal'>
                             (Room)
