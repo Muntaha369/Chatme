@@ -166,10 +166,21 @@ const modalVariants = {
     setParticipants(filter)
   }
 
-  const handleNewRoom = ()=>{
+  const handleNewRoom = async()=>{
 
     const newSocketID = roomName+"+room"
-    const upDatedParticipants = [...coAdmins,...participants]
+    const upDatedParticipants = [user,...coAdmins,...participants]
+    console.log(newSocketID)
+
+    if(roomName){
+    const res = await axios.post('http://localhost:3002/api/all/newRoom',
+      {
+      admin:user,
+      coAdmin:coAdmins,
+      participants,
+      roomname:newSocketID
+    })
+    console.log(res.data)}
   
     // setDataRoom(newSocketID);
     setSocketID(newSocketID)

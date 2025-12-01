@@ -50,8 +50,12 @@ const addMessage = async(req, res)=>{
 const createRoom = async(req, res)=>{
   const {admin, coAdmin, participants, roomname} = req.body;
 
+  if(!roomname){
+    return res.json({msg:"Its invalid"})
+  }
   const roomExists = await User.findOne({ "rooms.roomname": roomname });
-  console.log(roomExists)
+  console.log("This is the existing room",roomExists)
+
 
   if(roomExists){
     return res.json({msg:"room with this name already exist please choose the unique one"})
@@ -59,7 +63,7 @@ const createRoom = async(req, res)=>{
 
   const allParticipants = [admin, ...coAdmin, ...participants]
 
-  allParticipants.map(async(val)=>{
+  const updatedRooms = allParticipants.map(async(val)=>{
     const newUser = await User.findOneAndUpdate(
       {username: val},
       {$push:{rooms:{
@@ -70,7 +74,7 @@ const createRoom = async(req, res)=>{
       }}}
 
     )
-    console.log(newUser.username,"YEP THIS IS THE USER")
+    console.log(newUser,"YEP THIS IS THE USER")
   })
 
   res.json({msg:allParticipants})
