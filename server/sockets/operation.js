@@ -18,7 +18,7 @@ module.exports = async (socket, io)=>{
             { receiverId: data }
         ]
     }).sort({ timestamp: 1 })
-    console.log("This are the chats",Chats)
+    // console.log("This are the chats",Chats)
     socket.emit("Chat_history",Chats)
   })
 
@@ -56,6 +56,13 @@ module.exports = async (socket, io)=>{
     // const room = data.roomName
     socket.join(data.roomName)
     io.emit("room_invitationInitial", data)
+  })
+
+  socket.on("Room_List",(data)=>{
+    data.map((val)=>{
+      console.log("This are all room that needed to be joined",val)
+      socket.join(val)
+    })
   })
 
   // other user joining a room

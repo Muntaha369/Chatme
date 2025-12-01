@@ -11,7 +11,7 @@ import { useToggler } from '../store/store';
 import { useContact } from '../store/store';
 import { useReceiver } from '../store/store';
 
-const UserList = ({roomJoin}) => {
+const UserList = ({socket, roomJoin}) => {
   const { toggler } = useToggler()
   // const { userID } = useUserID();
   const [newRoomName, setNewRoomName] = useState('');
@@ -20,14 +20,14 @@ const UserList = ({roomJoin}) => {
   const [modelOpen, setModelOpen] = useState(false)
   const [participants, setParticipants] = useState([])
   const [coAdmins, setCoAdmins] = useState([])
+  const [roomName, setRoomName] = useState('')
+  const [changedData, setChangedData] = useState([])
+  const [optionOpacity, setOptionOpacity] = useState('')
   const { contact, setContact } = useContact()
   const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();
-  const [changedData, setChangedData] = useState([])
   const {receiverName, setReceiverName} = useReceiver()
-  const [roomName, setRoomName] = useState('')
-  const [optionOpacity, setOptionOpacity] = useState('')
-  const {dataRoom, setDataRoom} = useDataroom()
+  const {dataRoom} = useDataroom()
   const { user } = useUser();
   
   // Log the current active user ID for debugging
@@ -82,10 +82,18 @@ const modalVariants = {
     const getContact = async()=>{
       const email = localStorage.getItem('email');
       const res  = await axios.post('http://localhost:3002/api/all/addContacts',{clientName: email, contacts:'USUAL'})
-      // console.log("This is the contact data",res.data.msg)
+      console.log("This is the ROOMS data",res.data.rooms)
 
       const contactslist = res.data.msg
+      const roomlist = res.data.rooms
 
+      const newRoomlist = roomlist.map((val)=>{return val.roomname})
+
+      console.log("This is stupid roomlist",newRoomlist)
+
+      socket.emit('Room_List', newRoomlist)
+
+      roomlist.map((val)=>setRoomList((prev)=>[...prev,val.roomname]))
       contactslist.map((val)=>setContact(val))
 
     }  
@@ -283,6 +291,7 @@ const modalVariants = {
                                   <div className=' flex justify-center items-center flex-col' >
                                   <input 
                                   value={roomName}
+                                  required
                                   onChange={(e)=>setRoomName(e.target.value)}
                                   placeholder='Enter group name...' className='bg-gray-800 h-10 px-5 outline-0 hover:bg-gray-800/80 rounded-lg w-full mt-3 mb-3' type="text" />
                                   <input 

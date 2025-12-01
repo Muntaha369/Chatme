@@ -14,7 +14,7 @@ try {
     const { clientName, contacts } = req.body;
   if(contacts === "USUAL"){
     const user = await User.findOne({email:clientName})
-    return res.status(201).json({msg:user.contacts})
+    return res.status(201).json({msg:user.contacts, rooms:user.rooms})
   }
 
     const ContactExist = await User.findOne({email:clientName});
