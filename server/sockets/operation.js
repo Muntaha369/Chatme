@@ -16,9 +16,9 @@ module.exports = async (socket, io)=>{
         $or: [
             { senderId: data.user },
             { receiverId: data.user }
-        ]
-    }).sort({ timestamp: 1 })
-    // console.log("This are the chats",Chats)
+        ],
+        receiverId: { $not: { $regex: "\\+room" } } 
+    }).sort({ timestamp: 1 });
 
     const Rooms = data.RoomList
 

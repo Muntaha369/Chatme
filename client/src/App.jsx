@@ -228,14 +228,14 @@ const App = () => {
     .slice() // Create a copy
 
   const SyncedMessage = chatHistory.filter(msg=>{
-    const isMyMessageToTarget = msg.senderId === sender && msg.receiverId === receiverName;
+    const isMyMessageToTarget = (msg.senderId === sender && msg.receiverId === receiverName) 
     const isMessageFromTarget = msg.senderId === receiverName && msg.receiverId === sender;
     const isRoomMessageToCurrentRoom = msg.receiverId === receiverName; 
 
     if(receiverName && receiverName.includes('+room')){
-      console.log("bruuuuuuuuuuuuuuuuuuuuh",msg.messageText,isRoomMessageToCurrentRoom)
       return isRoomMessageToCurrentRoom;
     }
+
       return isMyMessageToTarget || isMessageFromTarget;
   }).slice()
 
