@@ -3,7 +3,7 @@ import axios from 'axios';
 import {motion} from 'framer-motion'
 import { Zap, PlusCircle } from 'lucide-react'; 
 import ToggleButton from './ToggleButton';
-import { multiSocket } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
+import { multiSocket, useRoom } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
 import { useReciverId } from '../store/store'; 
 import { useDataroom } from '../store/store';
 import { useUser } from '../store/store';
@@ -16,7 +16,7 @@ const UserList = ({socket, roomJoin}) => {
   // const { userID } = useUserID();
   const [newRoomName, setNewRoomName] = useState('');
   const [newAlluser, setnewAlluser] = useState({})
-  const [RoomList, setRoomList] = useState([])
+  const {RoomList, setRoomList} = useRoom()
   const [modelOpen, setModelOpen] = useState(false)
   const [participants, setParticipants] = useState([])
   const [coAdmins, setCoAdmins] = useState([])
@@ -93,7 +93,7 @@ const modalVariants = {
 
       socket.emit('Room_List', newRoomlist)
 
-      roomlist.map((val)=>setRoomList((prev)=>[...prev,val.roomname]))
+      roomlist.map((val)=>setRoomList(val.roomname))
       contactslist.map((val)=>setContact(val))
 
     }  
@@ -116,7 +116,7 @@ const modalVariants = {
   useEffect(() => {
     if (dataRoom && dataRoom.length > 0) {
         // Use the store's data to initialize the local room list
-        console.log("Data room is updated my wigga",dataRoom)
+        // console.log("Data room is updated my wigga",dataRoom)
         setRoomList(dataRoom); 
     }
   }, [dataRoom]); 

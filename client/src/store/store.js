@@ -74,3 +74,8 @@ export const useReceiver = create((set) => ({
   receiverName: '',
   setReceiverName: (receiver) => set(() => ({receiverName: receiver}))
 }));
+
+export const useRoom = create((set) => ({
+  RoomList:[],
+  setRoomList: (newRoom) => set((state) => ({RoomList:[newRoom, ...state.RoomList]}))
+}));

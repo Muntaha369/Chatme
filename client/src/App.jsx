@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList'; 
-import { multiSocket } from './store/store'; 
+import { multiSocket, useRoom } from './store/store'; 
 import { useReciverId } from './store/store'; 
 import { useDataroom } from './store/store'; 
 import { UserPlus } from 'lucide-react'; 
@@ -26,13 +26,15 @@ const App = () => {
   const { setDataRoom } = useDataroom();
   const { setSockets } = multiSocket();
   const { setUserID } = useUserID();
+  const { receiverName } = useReceiver()
+  const { RoomList } = useRoom()
+
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState('');
   const [messages, setMessages] = useState([]);
   const [chatHistory, setChatHistory] = useState([])
   const [newUserId, setNewUserId] = useState('');
   const [sender, setSender] = useState('')
-  const {receiverName} = useReceiver()
   
   
 
@@ -93,7 +95,7 @@ const App = () => {
     
     const roomReceiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log("Received room message:", data.message);
+      console.log("Received room message:", data);
     };
 
     const handleRoomInvitation = (data) => {
@@ -121,7 +123,7 @@ const App = () => {
       }
     }
     
-    socket.emit("send_username",user);
+    socket.emit("send_username",{user, RoomList});
     socket.on('hello', handleHello);
     socket.on('emitNewlyJoined', handleEmitall)
     socket.on('previousFRnewSock',handlePreFRnewSock)

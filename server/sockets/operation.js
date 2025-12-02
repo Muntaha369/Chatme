@@ -9,16 +9,33 @@ module.exports = async (socket, io)=>{
   
   socket.on("send_username", async(data)=>{
     socket.emit("hello", socket.id);
-    io.emit("emitNewlyJoined", {data, socketId:socket.id})
-    console.log("This one is the one",data);
-    io.emit("all_userData", data);
+    io.emit("emitNewlyJoined", {data:data.user, socketId:socket.id})
+    console.log("This one is the one",data.user);
+    io.emit("all_userData", data.user);
     const Chats = await Message.find({
         $or: [
-            { senderId: data },
-            { receiverId: data }
+            { senderId: data.user },
+            { receiverId: data.user }
         ]
     }).sort({ timestamp: 1 })
     // console.log("This are the chats",Chats)
+
+    const Rooms = data.RoomList
+
+    const promises = Rooms.map(async(val)=>{
+      return await Message.find({
+        $or: [
+            { senderId: val },
+            { receiverId: val }
+        ]
+      }).sort({ timestamp: 1 })
+
+    })
+
+    const roomChats = await Promise.all(promises);
+
+    console.log("THIS ARE ALL THE ROOM CHATS",roomChats)
+
     socket.emit("Chat_history",Chats)
   })
 
