@@ -2,17 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList'; 
-import { multiSocket, useRoom } from './store/store'; 
+import { multiSocket, useRoom, useOpen } from './store/store'; 
 import { useReciverId } from './store/store'; 
 import { useDataroom } from './store/store'; 
-import { UserPlus } from 'lucide-react'; 
+import { Menu } from 'lucide-react'; 
 import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from './store/store';
 import { useUserID } from './store/store';
 import { useReceiver } from './store/store';
 import axios from 'axios';
-
+import SlideAnimations from './component/Slider';
 // The socket connection should be established outside the component
 const socket = io.connect('http://localhost:3002');
 
@@ -28,6 +28,7 @@ const App = () => {
   const { setUserID } = useUserID();
   const { receiverName } = useReceiver()
   const { RoomList } = useRoom()
+  const { setOpen } = useOpen()
 
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState('');
@@ -87,8 +88,8 @@ const App = () => {
       const newArr = data.roomChats.flat()
       const saveArr = [...allonetoneChats, ...newArr]
       setChatHistory(saveArr)
-      console.log("roomChat", saveArr)
-      console.log("this the history",chatHistory)
+      // console.log("roomChat", saveArr)
+      // console.log("this the history",chatHistory)
     }
 
     
@@ -244,6 +245,7 @@ const App = () => {
   return (
     <div className='w-screen h-screen flex justify-center items-center'>
       <div className='h-full flex justify-center bg-gray-900 sm: w-[100%] md:w-[40%] lg:w-[30%]'>
+        <SlideAnimations/>
         <UserList socket={socket} roomJoin = {handleRoomJoin} /></div>
       <div className=' sm: w-[0%] md:w-[70%] h-full flex flex-col bg-gray-900 shadow-2xl overflow-hidden'>
         
@@ -255,21 +257,14 @@ const App = () => {
             </div>
             
             {socketID && (socketID.includes("+room") || socketID.includes("room")) && (
-              <form onSubmit={handleNewuserSubmit} className='flex items-center gap-2'>
-                <input
-                  type="text"
-                  value={newUserId}
-                  onChange={(e) => setNewUserId(e.target.value)}
-                  placeholder="User ID to Invite"
-                  className='px-3 py-1 border border-gray-600 rounded-lg text-sm bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500 outline-none transition w-40'
-                />
+              <>
                 <button
-                  type='submit'
-                  className='bg-indigo-600 text-white p-1 rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md flex items-center'
+                  onClick={()=>setOpen(true)}
+                  className='bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md flex items-center'
                 >
-                  <UserPlus size={18} />
+                  <Menu size={18} />
                 </button>
-              </form>
+              </>
             )}
 
           </div>

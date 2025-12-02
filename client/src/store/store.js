@@ -79,3 +79,8 @@ export const useRoom = create((set) => ({
   RoomList:[],
   setRoomList: (newRoom) => set((state) => ({RoomList:[newRoom, ...state.RoomList]}))
 }));
+
+export const useOpen = create((set)=>({
+  isOpen:false,
+  setOpen:(boolean) => set(()=>({isOpen:boolean}))
+}))
