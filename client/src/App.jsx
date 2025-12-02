@@ -28,7 +28,7 @@ const App = () => {
   const { setUserID } = useUserID();
   const { receiverName } = useReceiver()
   const { RoomList } = useRoom()
-  const { setOpen } = useOpen()
+  const { isOpen, setOpen } = useOpen()
 
   const [message, setMessage] = useState('');
   const [clientId, setId] = useState('');
@@ -259,8 +259,8 @@ const App = () => {
             {socketID && (socketID.includes("+room") || socketID.includes("room")) && (
               <>
                 <button
-                  onClick={()=>setOpen(true)}
-                  className='bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md flex items-center'
+                  onClick={()=>setOpen(!isOpen)}
+                  className='bg-indigo-600 text-white p-3 hover: cursor-pointer rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md flex items-center'
                 >
                   <Menu size={18} />
                 </button>
