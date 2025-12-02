@@ -36,7 +36,8 @@ module.exports = async (socket, io)=>{
 
     console.log("THIS ARE ALL THE ROOM CHATS",roomChats)
 
-    socket.emit("Chat_history",Chats)
+
+    socket.emit("Chat_history",{Chats,roomChats})
   })
 
   socket.on("emitOldtoNewlyJoined",(data)=>{

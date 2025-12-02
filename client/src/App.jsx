@@ -81,9 +81,13 @@ const App = () => {
     }
 
     const handleChathistory = (data)=>{
-      const allmessage = data.map((val)=>val)
-      setChatHistory(allmessage)
-      console.log("chats",allmessage);
+      const allonetoneChats = data.Chats.map((val)=>val)
+      // setChatHistory(allonetoneChats)
+      console.log("chats",data);
+      const newArr = data.roomChats.flat()
+      const saveArr = [...allonetoneChats, ...newArr]
+      setChatHistory(saveArr)
+      console.log("roomChat", saveArr)
       console.log("this the history",chatHistory)
     }
 
@@ -223,6 +227,18 @@ const App = () => {
     })
     .slice() // Create a copy
 
+  const SyncedMessage = chatHistory.filter(msg=>{
+    const isMyMessageToTarget = msg.senderId === sender && msg.receiverId === receiverName;
+    const isMessageFromTarget = msg.senderId === receiverName && msg.receiverId === sender;
+    const isRoomMessageToCurrentRoom = msg.receiverId === receiverName; 
+
+    if(receiverName && receiverName.includes('+room')){
+      console.log("bruuuuuuuuuuuuuuuuuuuuh",msg.messageText,isRoomMessageToCurrentRoom)
+      return isRoomMessageToCurrentRoom;
+    }
+      return isMyMessageToTarget || isMessageFromTarget;
+  }).slice()
+
     // const targetReceiver = localStorage.getItem('reciver');
 
   return (
@@ -266,11 +282,7 @@ const App = () => {
 
           // receiverName === targetReceiver &&
 
-           chatHistory
-           .filter((val) => 
-              (val.senderId === sender && val.receiverId === receiverName) ||
-             (val.senderId === receiverName && val.receiverId === sender)
-           )
+           SyncedMessage
           .map((val, idx) => {
             // Check if I am the sender
             // console.log("This is sender",sender,"This is val sender", val.senderId, "This is targetReceiver" , targetReceiver,"This is val receiver", val.reciverId)
