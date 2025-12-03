@@ -80,7 +80,22 @@ export const useRoom = create((set) => ({
   setRoomList: (newRoom) => set((state) => ({RoomList:[newRoom, ...state.RoomList]}))
 }));
 
+export const useRoomInfo = create((set) => ({
+  roomInfo:[],
+  setRoomInfo: (newRoom) => set((state) => ({roomInfo:[newRoom, ...state.roomInfo]}))
+}));
+
 export const useOpen = create((set)=>({
   isOpen:false,
   setOpen:(boolean) => set(()=>({isOpen:boolean}))
 }))
+
+export const useParticipants = create((set) => ({
+  admin: '',
+  coAdmin: [],
+  participants: [],
+
+  setParticipants1: (data) => {set(data)
+    console.log("this is the data from store",data)
+  } 
+}));

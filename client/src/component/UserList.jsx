@@ -3,7 +3,7 @@ import axios from 'axios';
 import {motion} from 'framer-motion'
 import { Zap, PlusCircle } from 'lucide-react'; 
 import ToggleButton from './ToggleButton';
-import { multiSocket, useRoom, useReciverId, useDataroom, useUser, useToggler, useContact, useReceiver } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
+import { multiSocket, useRoom, useReciverId, useDataroom, useUser, useToggler, useContact, useReceiver, useRoomInfo, useParticipants } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
 
 const UserList = ({socket, roomJoin}) => {
   const { toggler } = useToggler()
@@ -23,19 +23,14 @@ const UserList = ({socket, roomJoin}) => {
   const {receiverName, setReceiverName} = useReceiver()
   const {dataRoom} = useDataroom()
   const { user } = useUser();
+  const { roomInfo, setRoomInfo } = useRoomInfo()
+  const { setParticipants1 } = useParticipants()
   
-  // Log the current active user ID for debugging
-  // console.log("Current recipient:", socketID);
-  // console.log("debug sockets",Sockets)
-
-  // console.log("dataroom",dataRoom)
-
   const backdropVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
 };
 
-// Animation variants for the modal content
 const modalVariants = {
     hidden: {
         y: "-50px", // Start slightly above
@@ -80,7 +75,8 @@ const modalVariants = {
 
       const contactslist = res.data.msg
       const roomlist = res.data.rooms
-
+      roomlist.map((val)=>setRoomInfo(val))
+      console.log("This are the rooms", roomlist)
       const newRoomlist = roomlist.map((val)=>{return val.roomname})
 
       console.log("This is stupid roomlist",newRoomlist)
@@ -97,8 +93,8 @@ const modalVariants = {
   }, [])
 
   useEffect(() => {
-    console.log("now you can see my friend",receiverName)
-  }, [newAlluser, receiverName])
+    console.log("now you can see my friend",roomInfo)
+  }, [newAlluser, receiverName, roomInfo])
 
    {/* Ensured socket array is getting updated */}
   useEffect(()=>{
@@ -190,10 +186,18 @@ const modalVariants = {
     roomJoin(upDatedParticipants, newSocketID)
   }
 
+  const handleClick = (val)=>{
+    const valueFind = roomInfo.find((value)=>value.roomname === val)
+    if(valueFind){
+      console.log("Matches", valueFind.admin, valueFind.coAdmin, valueFind.participants)
+      setParticipants1({admin:valueFind.admin, coAdmin:valueFind.coAdmin, participants:valueFind.participants})
+    }
+  }
+
   const isRoomActive = (roomName) => receiverName === roomName;
 
   return (
-    <div className='w-full p-6 flex flex-col items-start space-y-4 max-w-sm mx-auto'>
+    <div className='w-full p-6 flex flex-col items-start space-y-4 overflow-scroll max-w-sm mx-auto'>
       
       {/* --- Room Creation Form --- */}
       <h2 className='text-2xl font-bold text-gray-800 border-b pb-2 w-full'>
@@ -364,6 +368,7 @@ const modalVariants = {
             setSocketID(val)
             setReceiverName(val)     
             localStorage.setItem('reciver',val)
+            handleClick(val)
           }}
           key = {idx}
           className={`w-full h-[75px] rounded-xl transition duration-150 shadow-lg flex items-center justify-between p-4 cursor-pointer 
