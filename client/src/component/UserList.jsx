@@ -3,13 +3,7 @@ import axios from 'axios';
 import {motion} from 'framer-motion'
 import { Zap, PlusCircle } from 'lucide-react'; 
 import ToggleButton from './ToggleButton';
-import { multiSocket, useRoom } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
-import { useReciverId } from '../store/store'; 
-import { useDataroom } from '../store/store';
-import { useUser } from '../store/store';
-import { useToggler } from '../store/store';
-import { useContact } from '../store/store';
-import { useReceiver } from '../store/store';
+import { multiSocket, useRoom, useReciverId, useDataroom, useUser, useToggler, useContact, useReceiver } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
 
 const UserList = ({socket, roomJoin}) => {
   const { toggler } = useToggler()

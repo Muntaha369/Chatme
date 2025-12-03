@@ -2,15 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList'; 
-import { multiSocket, useRoom, useOpen } from './store/store'; 
-import { useReciverId } from './store/store'; 
-import { useDataroom } from './store/store'; 
 import { Menu } from 'lucide-react'; 
 import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from './store/store';
-import { useUserID } from './store/store';
-import { useReceiver } from './store/store';
+import { multiSocket, useRoom, useOpen, useReciverId, useDataroom, useUser, useUserID, useReceiver } from './store/store'; 
 import axios from 'axios';
 import SlideAnimations from './component/Slider';
 // The socket connection should be established outside the component
