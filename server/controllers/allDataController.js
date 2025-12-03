@@ -80,18 +80,29 @@ const createRoom = async(req, res)=>{
   res.json({msg:allParticipants})
 }
 
-// const GetMessage = async(req,res)=>{
-//   try {
-//     const {name} = req.body;
-//     const messages = await Messages.find({
-//     $or: [
-//       { senderId: name },
-//       { receiverId: name }
-//     ]}).sort({ timestamp: 1 });
-//     res.status(201).json({messages})
-//   } catch (error) {
-//     res.status(500).json({msg:"Something is wrong here"})
-//   }
-// }
+const reMoveUser = async(req,res)=>{
+  const { roomName, user } = req.body;
+
+const removeUser = await User.findOneAndUpdate(
+  { username: user },
+  { 
+    $pull: { 
+      rooms: { roomname: roomName } 
+    } 
+  },
+  { new: true } 
+);
+
+const upDateForAll = await User.updateMany(
+  { "rooms.roomname": roomName }, 
+  { 
+    $pull: { 
+      "rooms.$.participants": user, // Try to pull from participants
+      "rooms.$.coAdmin": user       // AND try to pull from coAdmin
+    } 
+  }
+);
+
+}
 
 module.exports = {GetUsers, UpdateContacts, addMessage, createRoom}
