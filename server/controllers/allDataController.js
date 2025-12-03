@@ -112,4 +112,40 @@ try {
 
 }
 
-module.exports = {GetUsers, UpdateContacts, addMessage, createRoom, reMoveUser}
+const AddNewUsers = async (req, res)=>{
+  try {
+  
+    const { user, roomname, admin, coAdmin , participants, role } = req.body;
+  
+    const newUser = await User.findOneAndUpdate(
+        {username: user},
+        {$push:{rooms:{
+                        roomname,
+                        admin,
+                        coAdmin,
+                        participants
+        }}}
+  
+      )
+  
+    if(role === "coAdmin"){
+      await User.updateMany(
+        {"rooms.roomname":roomname},
+        {$push:{"rooms.$.coAdmin":user}}
+      )
+    }
+    else if(role === "participants"){
+      await User.updateMany(
+        {"rooms.roomname":roomname},
+        {$push:{"rooms.$.participants":user}}
+      )
+    }
+  
+      res.status(200).json({msg:`New user Added successfully ${newUser}`})
+} catch (error) {
+  res.status(500).json({msg:"something is wrong here"})
+}
+
+} 
+
+module.exports = {GetUsers, UpdateContacts, addMessage, createRoom, reMoveUser, AddNewUsers}

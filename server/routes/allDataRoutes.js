@@ -7,5 +7,6 @@ router.post('/addContacts',All.UpdateContacts)
 router.post('/removeUser',All.reMoveUser)
 router.post('/addMessage', All.addMessage)
 router.post('/newRoom',All.createRoom)
+router.post('/addNewUser',All.AddNewUsers)
 
 module.exports = router 
