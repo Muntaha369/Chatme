@@ -4,7 +4,7 @@ const All = require('../controllers/allDataController')
 
 router.get('/getData', All.GetUsers);
 router.post('/addContacts',All.UpdateContacts)
-// router.post('/getMessage',All.GetMessage)
+router.post('/removeUser',All.reMoveUser)
 router.post('/addMessage', All.addMessage)
 router.post('/newRoom',All.createRoom)
 

@@ -81,28 +81,35 @@ const createRoom = async(req, res)=>{
 }
 
 const reMoveUser = async(req,res)=>{
-  const { roomName, user } = req.body;
-
-const removeUser = await User.findOneAndUpdate(
-  { username: user },
-  { 
-    $pull: { 
-      rooms: { roomname: roomName } 
-    } 
-  },
-  { new: true } 
-);
-
-const upDateForAll = await User.updateMany(
-  { "rooms.roomname": roomName }, 
-  { 
-    $pull: { 
-      "rooms.$.participants": user, // Try to pull from participants
-      "rooms.$.coAdmin": user       // AND try to pull from coAdmin
-    } 
-  }
-);
+    
+try {
+    const { roomName, user } = req.body;
+  
+    const removeUser = await User.findOneAndUpdate(
+      { username: user },
+      { 
+        $pull: { 
+          rooms: { roomname: roomName } 
+        } 
+      },
+      { new: true } 
+    );
+  
+    const upDateForAll = await User.updateMany(
+      { "rooms.roomname": roomName }, 
+      { 
+        $pull: { 
+          "rooms.$.participants": user, // Try to pull from participants
+          "rooms.$.coAdmin": user       // AND try to pull from coAdmin
+        } 
+      }
+    );
+  
+    res.status(200).json({msg:removeUser})
+} catch (error) {
+  res.status(500).json({msg:"something is wrong here"})
+}
 
 }
 
-module.exports = {GetUsers, UpdateContacts, addMessage, createRoom}
+module.exports = {GetUsers, UpdateContacts, addMessage, createRoom, reMoveUser}
