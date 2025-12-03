@@ -1,7 +1,11 @@
 import React, {useEffect} from 'react';
 import { motion } from 'framer-motion';
-import { useOpen, useParticipants } from '../store/store';
+import { useOpen, useParticipants, useUser, useRoom } from '../store/store';
+import axios from 'axios';
 const UserRow = ({ name, role, onRemove }) => {
+  const { admin } = useParticipants(); 
+  const { user } = useUser();
+
   if (!name) return null;
 
   return (
@@ -30,6 +34,8 @@ const UserRow = ({ name, role, onRemove }) => {
       </div>
 
       {/* Remove Button - Hidden by default, Visible on Hover */}
+      {
+        admin === user &&
       <button 
         onClick={(e) => {
           e.stopPropagation(); // Prevent clicking the row
@@ -43,6 +49,7 @@ const UserRow = ({ name, role, onRemove }) => {
           <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
         </svg>
       </button>
+      }
     </div>
   );
 };
@@ -50,15 +57,22 @@ const UserRow = ({ name, role, onRemove }) => {
 // --- 3. MAIN COMPONENT ---
 export default function SlideAnimations() {
   const { isOpen, setOpen } = useOpen();
-  
-  // Destructuring your store data
-  const { admin, coAdmin, participants } = useParticipants(); 
+  const { admin, coAdmin, participants, setParticipants1 } = useParticipants(); 
 
   // Handlers
   const handleRemoveUser = (name) => {
     // Add your logic to remove user from store/DB here
     if(window.confirm(`Are you sure you want to remove ${name}?`)) {
       console.log(`Removing ${name}...`);
+      const roomname = localStorage.getItem('reciver')
+      const res = axios.post('http://localhost:3002/api/all/removeUser',{roomName:roomname, user:name})
+      console.log(`${name} is removed`,res)
+
+      const upDatedParticipants = participants.filter((val)=>val != name)
+      const upDatedCoAdmin = coAdmin.filter((val)=>val != name)
+
+      setParticipants1({admin, coAdmin:upDatedCoAdmin, participants:upDatedParticipants})
+
     }
   };
 

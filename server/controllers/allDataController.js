@@ -99,8 +99,8 @@ try {
       { "rooms.roomname": roomName }, 
       { 
         $pull: { 
-          "rooms.$.participants": user, // Try to pull from participants
-          "rooms.$.coAdmin": user       // AND try to pull from coAdmin
+          "rooms.$.participants": user, 
+          "rooms.$.coAdmin": user       
         } 
       }
     );
