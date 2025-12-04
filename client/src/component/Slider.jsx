@@ -91,17 +91,19 @@ export default function SlideAnimations() {
     setSuggestions([]); // Close suggestions
   };
 
-  const handleRemoveUser = (name) => {
+  const handleRemoveUser = async(name) => {
     if (window.confirm(`Are you sure you want to remove ${name}?`)) {
       console.log(`Removing ${name}...`);
       // Simulating API removal
+      const getRoom = localStorage.getItem('reciver')
+      await axios.post('http://localhost:3002/api/all/removeUser',{roomName:getRoom, user:name})
       const upDatedParticipants = participants.filter((val) => val != name)
       const upDatedCoAdmin = coAdmin.filter((val) => val != name)
       setParticipants1({ admin, coAdmin: upDatedCoAdmin, participants: upDatedParticipants })
     }
   };
 
-  const submitNewUser = () => {
+  const submitNewUser = async() => {
     if(!newUserName.trim()) return alert("Please enter a name");
     console.log("Adding user:", newUserName);
 
@@ -120,10 +122,10 @@ export default function SlideAnimations() {
           role
       }
       
-      const res = axios.post("http://localhost:3002/api/all/addNewUser",payload)
+      const res = await axios.post("http://localhost:3002/api/all/addNewUser",payload)
       console.log(res)
-      
-      const upDatedParticipants = [participants, newUserName.trim()]
+
+      const upDatedParticipants = [...participants, newUserName.trim()]
   
       setParticipants1({participants:upDatedParticipants})
     }
@@ -139,10 +141,10 @@ export default function SlideAnimations() {
           role
       }
 
-      const res = axios.post("http://localhost:3002/api/all/addNewUser",payload)
+      const res = await axios.post("http://localhost:3002/api/all/addNewUser",payload)
       console.log(res)
 
-      const upDatedCoAdmin = [coAdmin, newUserName.trim()]
+      const upDatedCoAdmin = [...coAdmin, newUserName.trim()]
 
       setParticipants1({coAdmin:upDatedCoAdmin})
     }
