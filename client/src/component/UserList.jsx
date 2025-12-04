@@ -3,13 +3,12 @@ import axios from 'axios';
 import {motion} from 'framer-motion'
 import { Zap, PlusCircle } from 'lucide-react'; 
 import ToggleButton from './ToggleButton';
-import { multiSocket, useRoom, useReciverId, useDataroom, useUser, useToggler, useContact, useReceiver, useRoomInfo, useParticipants } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
+import { multiSocket, useRoom, useReciverId, useDataroom, useUser, useToggler, useContact, useReceiver, useRoomInfo, useParticipants, useAllUser } from '../store/store'; // FIX: Adjusted path to assume store is in the parent directory
 
 const UserList = ({socket, roomJoin}) => {
   const { toggler } = useToggler()
   // const { userID } = useUserID();
   const [newRoomName, setNewRoomName] = useState('');
-  const [newAlluser, setnewAlluser] = useState({})
   const {RoomList, setRoomList} = useRoom()
   const [modelOpen, setModelOpen] = useState(false)
   const [participants, setParticipants] = useState([])
@@ -17,6 +16,7 @@ const UserList = ({socket, roomJoin}) => {
   const [roomName, setRoomName] = useState('')
   const [changedData, setChangedData] = useState([])
   const [optionOpacity, setOptionOpacity] = useState('')
+  const {newAlluser, setnewAlluser} = useAllUser()
   const { contact, setContact } = useContact()
   const { Sockets } = multiSocket(); 
   const { socketID, setSocketID } = useReciverId();

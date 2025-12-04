@@ -99,3 +99,8 @@ export const useParticipants = create((set) => ({
     console.log("this is the data from store",data)
   } 
 }));
+
+export const useAllUser = create((set) => ({
+  newAlluser:[],
+  setnewAlluser: (Allusers) => set(() => ({newAlluser:Allusers}))
+}));
