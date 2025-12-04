@@ -3,20 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useOpen, useParticipants, useUser, useAllUser } from '../store/store';
 import axios from 'axios';
 
-// --- MOCK DATABASE FOR SUGGESTIONS ---
-const MOCK_ALL_USERS = [
-  "alice_wonderland",
-  "bob_builder",
-  "charlie_brown",
-  "david_beckham",
-  "eve_polastri",
-  "frank_ocean",
-  "grace_hopper",
-  "harry_potter",
-  "iron_man",
-  "jack_sparrow"
-];
-
 // --- 1. USER ROW COMPONENT (Unchanged) ---
 const UserRow = ({ name, role, onRemove }) => {
   const { admin } = useParticipants();
@@ -70,9 +56,12 @@ export default function SlideAnimations() {
   const { isOpen, setOpen } = useOpen();
   const { admin, coAdmin, participants, setParticipants1 } = useParticipants();
   const {newAlluser} = useAllUser()
+  const [role, setRole] = useState('')
   
   const [isAddPanelOpen, setAddPanelOpen] = useState(false);
   const [newUserName, setNewUserName] = useState("");
+
+  useEffect(()=>{console.log("The role is",role)},[role])
   
   
   // New State for Suggestions
@@ -115,6 +104,48 @@ export default function SlideAnimations() {
   const submitNewUser = () => {
     if(!newUserName.trim()) return alert("Please enter a name");
     console.log("Adding user:", newUserName);
+
+    if(role === ""){
+      alert("You need to select a role")
+    }
+    else if(role === 'participants'){
+      const roomname = localStorage.getItem("reciver")
+
+      const payload = {  
+          user:newUserName.trim(),
+          roomname,
+          admin,
+          coAdmin,
+          participants,
+          role
+      }
+      
+      const res = axios.post("http://localhost:3002/api/all/addNewUser",payload)
+      console.log(res)
+      
+      const upDatedParticipants = [participants, newUserName.trim()]
+  
+      setParticipants1({participants:upDatedParticipants})
+    }
+    else if(role === "coAdmin"){
+      const roomname = localStorage.getItem("reciver")
+
+      const payload = {  
+          user:newUserName.trim(),
+          roomname,
+          admin,
+          coAdmin,
+          participants,
+          role
+      }
+
+      const res = axios.post("http://localhost:3002/api/all/addNewUser",payload)
+      console.log(res)
+
+      const upDatedCoAdmin = [coAdmin, newUserName.trim()]
+
+      setParticipants1({coAdmin:upDatedCoAdmin})
+    }
     
     // Add logic to update store/backend
     
@@ -246,16 +277,28 @@ export default function SlideAnimations() {
           <div className="pt-4">
             <button 
               onClick={submitNewUser}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold shadow-lg transition-all"
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 hover:cursor-pointer text-white rounded-lg font-semibold shadow-lg transition-all"
             >
-              Send Invite
+              Add User
             </button>
             <button 
+              onClick={()=>setRole("coAdmin")} 
+              className="w-full py-3 px-4 focus:bg-green-700 border-2 text-sm border-slate-400 mt-3 hover:bg-green-700/80 hover:cursor-pointer hover:border-green-700/80 rounded-xl text-slate-400 hover:text-white focus:text-white focus:border-green-700 font-semibold shadow-lg transition-all"
+            >
+              Co-admin
+            </button>
+            <button 
+              onClick={()=>setRole("participants")} 
+              className="w-full py-3 px-4 focus:bg-green-700 border-2 text-sm border-slate-400 mt-3 hover:bg-green-700/80 hover:cursor-pointer hover:border-green-700/80 rounded-xl text-slate-400 hover:text-white focus:text-white focus:border-green-700 font-semibold shadow-lg transition-all"
+            >
+              Participant
+            </button>
+            <button  
               onClick={() => {
                 setAddPanelOpen(false);
                 setSuggestions([]);
               }}
-              className="w-full mt-3 py-2 px-4 text-slate-400 hover:text-white transition-colors text-sm"
+              className="w-full mt-3 py-3 border-2 hover:border-red-500 hover:cursor-pointer border-slate-400 font-semibold px-4 hover:bg-red-500/80 rounded-xl text-slate-400 hover:text-white transition-colors text-sm"
             >
               Cancel
             </button>
