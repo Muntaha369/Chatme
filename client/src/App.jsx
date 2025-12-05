@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList';
-import { Menu, Send } from 'lucide-react'; // Added Send icon
+import { Menu, Send, Paperclip } from 'lucide-react'; // Added Send icon
 import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { multiSocket, useRoom, useOpen, useReciverId, useDataroom, useUser, useUserID, useReceiver } from './store/store';
@@ -145,6 +145,15 @@ const App = () => {
     };
   }, [setSockets, setDataRoom, user]);
 
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      alert(`File selected: ${selectedFile.name}`);
+      // Add your upload logic here
+    }
+    };
 
   const messageEmitter = async (e) => {
     e.preventDefault();
@@ -328,6 +337,25 @@ const App = () => {
         {/* Input Area */}
         <div className='p-4 md:p-6 bg-gray-900 border-t border-gray-800/50'>
           <form onSubmit={messageEmitter} className='flex gap-3 relative max-w-4xl mx-auto w-full'>
+            
+            {/* 1. Hidden File Input */}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleFileSelect} 
+              className="hidden" 
+            />
+
+            {/* 2. File Select Button */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="p-3 text-gray-400 hover:text-white bg-gray-800 border border-gray-700 rounded-xl hover:bg-gray-700 transition-all duration-200 focus:ring-2 focus:ring-indigo-500 active:scale-95"
+              title="Attach File"
+            >
+              <Paperclip size={20} />
+            </button>
+
             <input
               onChange={(e) => setMessage(e.target.value)}
               value={message}
@@ -335,6 +363,7 @@ const App = () => {
               type='text'
               placeholder={`Message ${receiverName || '...'}`}
             />
+            
             <button
               type='submit'
               disabled={!message.trim() || !receiverName}
