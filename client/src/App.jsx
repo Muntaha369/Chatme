@@ -181,18 +181,6 @@ const App = () => {
     }
   };
 
-  const handleNewuserSubmit = (e) => {
-    e.preventDefault();
-    const data = { reciverId: newUserId.trim(), roomName: socketID.trim(), senderId: clientId };
-
-    if (!socketID.includes("+room")) {
-      alert("Please select a valid chat room before inviting a user.");
-      return;
-    }
-    socket.emit('room_req', data);
-    setNewUserId('');
-  };
-
   const handleRoomJoin = (participants, newRoomName) => {
     const data = { participants, roomName: newRoomName.trim(), senderId: clientId };
 
