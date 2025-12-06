@@ -15,12 +15,10 @@ app.use(cors({
 
 const server = http.createServer(app);
 
-
-
 app.use('/api/auth',useRouter)
 app.use('/api/all',allRoute)
 
-socketInit(server);
+socketInit(server, app);
 
 ConnectDb().then(() => {
     server.listen(3002, () => console.log("Server is running on port 3002"));
