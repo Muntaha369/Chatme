@@ -87,8 +87,21 @@ const App = () => {
 
 
     const receiveMessageHandler = (data) => {
+      const tryVar = data.message
+      if(tryVar.startsWith('esc')){
+        const newString = tryVar.replace('esc','')
+        console.log("This is the new one",newString)
+        const newData = {
+          Id:data.Id,
+          message:newString,
+          reciverId:data.reciverId,
+          senderName:data.senderName
+        }
+        console.log("NewData",newData)
+        setMessages((prevMessages) => [newData, ...prevMessages]);
+      }else{
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log('Received message:', data);
+      console.log('Received message:', data);}
     };
 
     const roomReceiveMessageHandler = (data) => {
@@ -121,6 +134,10 @@ const App = () => {
       }
     }
 
+    const handleFlileUpload = (data) => {
+      console.log("This is the Data", data);
+    }
+
     socket.emit("send_username", { user, RoomList });
     socket.on('hello', handleHello);
     socket.on('emitNewlyJoined', handleEmitall)
@@ -131,6 +148,7 @@ const App = () => {
     socket.on('room_receive_message', roomReceiveMessageHandler);
     socket.on('room_invitation', handleRoomInvitation);
     socket.on('room_invitationInitial', handleInitialInvitation);
+    socket.on('file:uploaded', handleFlileUpload)
 
     return () => {
       socket.off('hello', handleHello);
@@ -142,6 +160,7 @@ const App = () => {
       socket.off('room_receive_message', roomReceiveMessageHandler);
       socket.off('room_invitation', handleRoomInvitation);
       socket.off('room_invitationInitial', handleInitialInvitation);
+      socket.off('file:uploaded', handleFlileUpload)
     };
   }, [setSockets, setDataRoom, user]);
 
