@@ -153,15 +153,15 @@ const App = () => {
 
     socket.emit("send_username", { user, RoomList });
     socket.on('hello', handleHello);
-    socket.on('emitNewlyJoined', handleEmitall)
-    socket.on('previousFRnewSock', handlePreFRnewSock)
-    socket.on("all_userData", handleUserData)
-    socket.on("Chat_history", handleChathistory)
+    socket.on('emitNewlyJoined', handleEmitall);
+    socket.on('previousFRnewSock', handlePreFRnewSock);
+    socket.on("all_userData", handleUserData);
+    socket.on("Chat_history", handleChathistory);
     socket.on('receive_message', receiveMessageHandler);
     socket.on('room_receive_message', roomReceiveMessageHandler);
     socket.on('room_invitation', handleRoomInvitation);
     socket.on('room_invitationInitial', handleInitialInvitation);
-    socket.on('file:uploaded', handleFlileUpload)
+    socket.on('file:uploaded', handleFlileUpload);
 
     return () => {
       socket.off('hello', handleHello);
@@ -173,19 +173,37 @@ const App = () => {
       socket.off('room_receive_message', roomReceiveMessageHandler);
       socket.off('room_invitation', handleRoomInvitation);
       socket.off('room_invitationInitial', handleInitialInvitation);
-      socket.off('file:uploaded', handleFlileUpload)
+      socket.off('file:uploaded', handleFlileUpload);
     };
   }, [setSockets, setDataRoom, user]);
 
   const fileInputRef = useRef(null);
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      alert(`File selected: ${selectedFile.name}`);
-      // Add your upload logic here
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("receiverName", socketID);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3002/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("UPLOAD SUCCESS:", res.data);
+    } catch (err) {
+      console.error("UPLOAD FAILED:", err);
     }
-    };
+  };
+
 
 const messageEmitter = async (e) => {
   e.preventDefault();

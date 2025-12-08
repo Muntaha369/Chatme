@@ -36,6 +36,8 @@ const socketInit = (server, app) => {
       return res.status(400).json({ ok: false, msg: 'No file uploaded' });
     }
 
+    const { receiverName } = req.body;  
+
     const fileInfo = {
       filename: req.file.filename,
       originalname: req.file.originalname,
@@ -43,10 +45,11 @@ const socketInit = (server, app) => {
       path: `/uploads/${req.file.filename}`,
     };
 
-    io.emit('file:uploaded', fileInfo);
+    io.to(receiverName).emit('file:uploaded', fileInfo);
 
     return res.json({ ok: true, file: fileInfo });
   });
+
 
   app.use('/uploads', require('express').static(uploadDir));
 
