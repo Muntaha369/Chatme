@@ -217,6 +217,13 @@ const messageEmitter = async (e) => {
       senderName: user
     };
 
+    const DisplayMessage = {
+      Id: clientId,
+      message: trimmedMSG,
+      reciverId: currentRecipient.trim(), 
+      senderName: user 
+    }
+
     const payload = {
       senderId: sender,
       receiverId: receiverName,
@@ -230,7 +237,7 @@ const messageEmitter = async (e) => {
     await axios.post('http://localhost:3002/api/all/addMessage', payload);
 
     if(!isRoom){
-    setMessages((prevMessages) => [newMessage, ...prevMessages]);
+    setMessages((prevMessages) => [DisplayMessage, ...prevMessages]);
     setMessage('');}
     else{
     setMessages((prevMessages) => [...prevMessages]);
