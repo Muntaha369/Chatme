@@ -105,8 +105,21 @@ const App = () => {
     };
 
     const roomReceiveMessageHandler = (data) => {
+      const tryVar = data.message
+      if(tryVar.startsWith('esc')){
+        const newString = tryVar.replace('esc','')
+        console.log("This is the new one",newString)
+        const newData = {
+          Id:data.Id,
+          message:newString,
+          reciverId:data.reciverId,
+          senderName:data.senderName
+        }
+        console.log("NewData",newData)
+        setMessages((prevMessages) => [newData, ...prevMessages]);
+      }else{
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log("Received room message:", data);
+      console.log('Room Received message:', data);}
     };
 
     const handleRoomInvitation = (data) => {
