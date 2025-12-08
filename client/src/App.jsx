@@ -174,40 +174,60 @@ const App = () => {
     }
     };
 
-  const messageEmitter = async (e) => {
-    e.preventDefault();
+const messageEmitter = async (e) => {
+  e.preventDefault();
 
-    const currentRecipient = socketID;
-    console.log("this i the type", socketID)
+  const currentRecipient = socketID;
 
-    if (currentRecipient && currentRecipient.trim() !== '') {
-      if (message.trim()) {
-        const newMessage = { Id: clientId, message: message.trim(), reciverId: currentRecipient.trim(), senderName: user };
-        const payload = {
-          senderId: sender,
-          receiverId: receiverName,
-          messageText: message.trim(),
-          messageType: currentRecipient.includes('+room') ? 'room' : 'private'
-        }
-        // console.log("Damming",user)
-        socket.emit('send_message', newMessage);
-        console.log('EMIT:', newMessage);
-        console.log("this is", sender, receiverName, newMessage.message)
-        await axios.post('http://localhost:3002/api/all/addMessage', payload)
+  if (!currentRecipient || currentRecipient.trim() === '') {
+    alert("Please select a user or chat room to send a message.");
+    return;
+  }
 
-        if (currentRecipient.includes('+room')) {
-          console.log("message is set")
-          setMessages((prevMessages) => [...prevMessages]);
-        }
-        else {
-          setMessages((prevMessages) => [newMessage, ...prevMessages]);
-          setMessage('');
-        }
-      }
-    } else {
-      alert("Please select a user or chat room to send a message.");
+  if (!message.trim()) return;
+
+  try {
+    const trimmedMSG = message.trim();
+    
+    let finalMessageText = trimmedMSG;
+    if (trimmedMSG.startsWith('$') || trimmedMSG.startsWith('esc')) {
+      finalMessageText = "esc" + trimmedMSG;
     }
-  };
+
+    const isRoom = currentRecipient.includes('+room');
+    const msgType = isRoom ? 'room' : 'private';
+
+    const newMessage = {
+      Id: clientId,
+      message: finalMessageText,
+      reciverId: currentRecipient.trim(), 
+      senderName: user
+    };
+
+    const payload = {
+      senderId: sender,
+      receiverId: receiverName,
+      messageText: finalMessageText,
+      messageType: msgType
+    };
+
+    console.log('Sending:', newMessage);
+    socket.emit('send_message', newMessage);
+    
+    await axios.post('http://localhost:3002/api/all/addMessage', payload);
+
+    if(!isRoom){
+    setMessages((prevMessages) => [newMessage, ...prevMessages]);
+    setMessage('');}
+    else{
+    setMessages((prevMessages) => [...prevMessages]);
+    }
+
+  } catch (error) {
+    console.error("Failed to send message:", error);
+    alert("Failed to send message. Please try again.");
+  }
+};
 
   const handleRoomJoin = (participants, newRoomName) => {
     const data = { participants, roomName: newRoomName.trim(), senderId: clientId };
