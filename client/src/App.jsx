@@ -189,6 +189,19 @@ const App = () => {
       };
       setMessages((prev)=>[newMessage,...prev])
       console.log("UPLOAD SUCCESS:", res.data.file.filename);
+
+      const currentRecipient = socketID;
+
+      const isRoom = currentRecipient.includes('+room');
+      const msgType = isRoom ? 'room' : 'private';
+      const payload = {
+        senderId: sender,
+        receiverId: receiverName,
+        messageText: res.data.file.filename,
+        messageType: msgType
+      };
+      const upDateDB = await axios.post('http://localhost:3002/api/all/addMessage', payload);
+      console.log("UPDATEDB",upDateDB)
     } catch (err) {
       console.error("UPLOAD FAILED:", err);
     }
@@ -384,7 +397,7 @@ const currentChatMessages = messages
                   <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{msg.message}</p>}
                   {
                     isFile && msg.message.slice(1) &&
-                    <img className='max-h-[300px]' src={`http://localhost:3002/uploads/${msg.message.slice(1)}`} alt={`${msg.message.slice(1)}`} />
+                    <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${msg.message.slice(1)}`} alt={`${msg.message.slice(1)}`} />
                   }
                 </div>
               </div>
@@ -394,7 +407,7 @@ const currentChatMessages = messages
           {/* Historical Messages */}
           {SyncedMessage.map((val, idx) => {
             const isMe = val.senderId === sender;
-
+            const ifFile = val.messageText[0] === '$'
             return (
               <div
                 key={`hist-${idx}`}
@@ -409,7 +422,11 @@ const currentChatMessages = messages
                   <p className={`text-[10px] font-bold mb-1 uppercase tracking-wider ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
                     {isMe ? 'You' : val.senderId}
                   </p>
-                  <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{val.messageText}</p>
+                  { !ifFile &&
+                  <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{val.messageText}</p>}
+                  {ifFile &&
+                    <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${val.messageText.slice(1)}`} alt={`${val.messageText.slice(1)}`} />
+                  }
                 </div>
               </div>
             );
