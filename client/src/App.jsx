@@ -182,13 +182,13 @@ const App = () => {
       );
       const newMessage = {
         Id: clientId,
-        message: '$'+selectedFile.name,
+        message: res.data.file.filename,
         reciverId: socketID, 
         senderName: user,
         textORfile: 'File'
       };
       setMessages((prev)=>[newMessage,...prev])
-      console.log("UPLOAD SUCCESS:", res.data);
+      console.log("UPLOAD SUCCESS:", res.data.file.filename);
     } catch (err) {
       console.error("UPLOAD FAILED:", err);
     }

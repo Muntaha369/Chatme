@@ -47,8 +47,6 @@ const socketInit = (server, app) => {
       reciverId
     };
 
-    console.log("reciverID", reciverId, "receiverName", receiverName)
-
     io.to(receiverName).emit('file:uploaded', fileInfo);
 
     return res.json({ ok: true, file: fileInfo });
