@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList';
-import { Menu, Send, Paperclip } from 'lucide-react'; // Added Send icon
+import { Menu, Send, Paperclip } from 'lucide-react'; 
 import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { multiSocket, useRoom, useOpen, useReciverId, useDataroom, useUser, useUserID, useReceiver } from './store/store';
@@ -41,7 +41,6 @@ const App = () => {
       const res = await verifyToken()
 
       if (res && res.success) {
-        // console.log("hip hip hoorray !!")
         setUser(res.message2)
         localStorage.setItem('email', res.message)
         console.log("this is me", res.message2)
@@ -76,23 +75,22 @@ const App = () => {
 
     const handleChathistory = (data) => {
       const allonetoneChats = data.Chats.map((val) => val)
-      // setChatHistory(allonetoneChats)
       console.log("chats", data);
       const newArr = data.roomChats.flat()
       const saveArr = [...allonetoneChats, ...newArr]
       setChatHistory(saveArr)
-      // console.log("roomChat", saveArr)
-      // console.log("this the history",chatHistory)
     }
 
 
     const receiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log('Received message:', data);}
+      console.log('Received message:', data);
+    }
 
     const roomReceiveMessageHandler = (data) => {
       setMessages((prevMessages) => [data, ...prevMessages]);
-      console.log('Room Received message:', data);}
+      console.log('Room Received message:', data);
+    }
 
 
     const handleRoomInvitation = (data) => {
@@ -109,7 +107,6 @@ const App = () => {
 
     const handleInitialInvitation = (data) => {
       const allParticipants = data.participants;
-      // console.log("This are all participants", user)
       const exists = allParticipants.find((val) => val === user)
       if (exists) {
         setDataRoom(data.roomName)
@@ -123,14 +120,15 @@ const App = () => {
     const handleFlileUpload = (data) => {
       console.log("This is the Data", data);
       const newMessage = {
-      Id: data.Id,
-      message: data.filename,
-      reciverId: data.reciverId, 
-      senderName: user,
-      textORfile: 'File'
-    };
-      console.log("The newmessage",newMessage)
-      setMessages((...prev)=>[newMessage, ...prev])
+        Id: data.Id,
+        message: data.filename,
+        reciverId: data.reciverId,
+        senderName: user, // Assuming 'user' is accessible here via closure, or data.senderName if server sends it
+        textORfile: 'File'
+      };
+      console.log("The newmessage", newMessage)
+      // FIX: Changed (...prev) to (prev)
+      setMessages((prev) => [newMessage, ...prev])
     }
 
     socket.emit("send_username", { user, RoomList });
@@ -168,8 +166,8 @@ const App = () => {
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append("receiverName", socketID);
-    formData.append("Id",clientId)
-    formData.append("reciverId",socketID)
+    formData.append("Id", clientId)
+    formData.append("reciverId", socketID)
     try {
       const res = await axios.post(
         "http://localhost:3002/upload",
@@ -180,14 +178,9 @@ const App = () => {
           },
         }
       );
-      const newMessage = {
-        Id: clientId,
-        message: res.data.file.filename,
-        reciverId: socketID, 
-        senderName: user,
-        textORfile: 'File'
-      };
-      setMessages((prev)=>[newMessage,...prev])
+      
+      // FIX: Removed manual setMessages here to prevent duplication.
+      // The socket listener 'file:uploaded' will handle the UI update.
       console.log("UPLOAD SUCCESS:", res.data.file.filename);
 
       const currentRecipient = socketID;
@@ -201,76 +194,77 @@ const App = () => {
         messageType: msgType
       };
       const upDateDB = await axios.post('http://localhost:3002/api/all/addMessage', payload);
-      console.log("UPDATEDB",upDateDB)
+      console.log("UPDATEDB", upDateDB)
     } catch (err) {
       console.error("UPLOAD FAILED:", err);
     }
   };
 
 
-const messageEmitter = async (e) => {
-  e.preventDefault();
+  const messageEmitter = async (e) => {
+    e.preventDefault();
 
-  const currentRecipient = socketID;
+    const currentRecipient = socketID;
 
-  if (!currentRecipient || currentRecipient.trim() === '') {
-    alert("Please select a user or chat room to send a message.");
-    return;
-  }
-
-  if (!message.trim()) return;
-
-  try {
-    const trimmedMSG = message.trim();
-    
-    let finalMessageText = trimmedMSG;
-    if (trimmedMSG.startsWith('$') || trimmedMSG.startsWith('esc')) {
-      finalMessageText = "esc" + trimmedMSG;
+    if (!currentRecipient || currentRecipient.trim() === '') {
+      alert("Please select a user or chat room to send a message.");
+      return;
     }
 
-    const isRoom = currentRecipient.includes('+room');
-    const msgType = isRoom ? 'room' : 'private';
+    if (!message.trim()) return;
 
-    const newMessage = {
-      Id: clientId,
-      message: finalMessageText,
-      reciverId: currentRecipient.trim(), 
-      senderName: user,
-      textORfile: 'Text'
-    };
+    try {
+      const trimmedMSG = message.trim();
 
-    const DisplayMessage = {
-      Id: clientId,
-      message: trimmedMSG,
-      reciverId: currentRecipient.trim(), 
-      senderName: user,
-      textORfile: 'Text'
+      let finalMessageText = trimmedMSG;
+      if (trimmedMSG.startsWith('$') || trimmedMSG.startsWith('esc')) {
+        finalMessageText = "esc" + trimmedMSG;
+      }
+
+      const isRoom = currentRecipient.includes('+room');
+      const msgType = isRoom ? 'room' : 'private';
+
+      const newMessage = {
+        Id: clientId,
+        message: finalMessageText,
+        reciverId: currentRecipient.trim(),
+        senderName: user,
+        textORfile: 'Text'
+      };
+
+      const DisplayMessage = {
+        Id: clientId,
+        message: trimmedMSG,
+        reciverId: currentRecipient.trim(),
+        senderName: user,
+        textORfile: 'Text'
+      }
+
+      const payload = {
+        senderId: sender,
+        receiverId: receiverName,
+        messageText: finalMessageText,
+        messageType: msgType
+      };
+
+      console.log('Sending:', newMessage);
+      socket.emit('send_message', newMessage);
+
+      await axios.post('http://localhost:3002/api/all/addMessage', payload);
+
+      if (!isRoom) {
+        setMessages((prevMessages) => [DisplayMessage, ...prevMessages]);
+        setMessage('');
+      }
+      else {
+        setMessages((prevMessages) => [...prevMessages]);
+      }
+
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      alert("Failed to send message. Please try again.");
     }
-
-    const payload = {
-      senderId: sender,
-      receiverId: receiverName,
-      messageText: finalMessageText,
-      messageType: msgType
-    };
-
-    console.log('Sending:', newMessage);
-    socket.emit('send_message', newMessage);
-    
-    await axios.post('http://localhost:3002/api/all/addMessage', payload);
-
-    if(!isRoom){
-    setMessages((prevMessages) => [DisplayMessage, ...prevMessages]);
-    setMessage('');}
-    else{
-    setMessages((prevMessages) => [...prevMessages]);
-    }
-
-  } catch (error) {
-    console.error("Failed to send message:", error);
-    alert("Failed to send message. Please try again.");
-  }
-};
+  };
 
   const handleRoomJoin = (participants, newRoomName) => {
     const data = { participants, roomName: newRoomName.trim(), senderId: clientId };
@@ -285,40 +279,40 @@ const messageEmitter = async (e) => {
 
   }
 
-const currentChatMessages = messages
-  .filter(msg => {
-    // 1. FILTERING LOGIC ONLY
-    const currentRecipient = socketID;
-    
-    // Check ownership
-    const isMyMessageToTarget = msg.Id === clientId && msg.reciverId === currentRecipient;
-    const isMessageFromTarget = msg.Id === currentRecipient && msg.reciverId === clientId;
-    const isRoomMessageToCurrentRoom = msg.reciverId === currentRecipient;
+  const currentChatMessages = messages
+    .filter(msg => {
+      // 1. FILTERING LOGIC ONLY
+      const currentRecipient = socketID;
 
-    // Room logic
-    if (currentRecipient && currentRecipient.includes('+room')) {
-      return isRoomMessageToCurrentRoom;
-    }
+      // Check ownership
+      const isMyMessageToTarget = msg.Id === clientId && msg.reciverId === currentRecipient;
+      const isMessageFromTarget = msg.Id === currentRecipient && msg.reciverId === clientId;
+      const isRoomMessageToCurrentRoom = msg.reciverId === currentRecipient;
 
-    // Direct message logic
-    return isMyMessageToTarget || isMessageFromTarget;
-  })
-  .map(msg => {
-    const currentRecipient = socketID;
-    // 2. TRANSFORMATION LOGIC
-    // Check if it starts with 'esc'
-    const isMessageFromTarget = msg.Id === currentRecipient && msg.reciverId === clientId;
-    if(isMessageFromTarget){
-    if (msg.message && msg.message.startsWith('esc')) {
-      // Create a copy of the message object with the new text
-      // .slice(3) removes the first 3 characters ("esc")
-      return { ...msg, message: msg.message.slice(3) };
-    }
-    return msg;
-  }
-    // If no change needed, return original
-    return msg;
-  });
+      // Room logic
+      if (currentRecipient && currentRecipient.includes('+room')) {
+        return isRoomMessageToCurrentRoom;
+      }
+
+      // Direct message logic
+      return isMyMessageToTarget || isMessageFromTarget;
+    })
+    .map(msg => {
+      const currentRecipient = socketID;
+      // 2. TRANSFORMATION LOGIC
+      // Check if it starts with 'esc'
+      const isMessageFromTarget = msg.Id === currentRecipient && msg.reciverId === clientId;
+      if (isMessageFromTarget) {
+        if (msg.message && msg.message.startsWith('esc')) {
+          // Create a copy of the message object with the new text
+          // .slice(3) removes the first 3 characters ("esc")
+          return { ...msg, message: msg.message.slice(3) };
+        }
+        return msg;
+      }
+      // If no change needed, return original
+      return msg;
+    });
 
   const SyncedMessage = chatHistory.toReversed().filter(msg => {
     const isMyMessageToTarget = (msg.senderId === sender && msg.receiverId === receiverName)
@@ -377,7 +371,7 @@ const currentChatMessages = messages
           {currentChatMessages.map((msg, index) => {
             const isSender = msg.Id === clientId;
             const isRoom = msg.reciverId && (msg.reciverId.includes("+room") || msg.reciverId.includes("room"));
-            const isFile = msg.textORfile.includes("File") 
+            const isFile = msg.textORfile.includes("File")
             return (
               <div
                 key={index}
@@ -393,8 +387,9 @@ const currentChatMessages = messages
                     {isRoom && (isSender ? 'You' : msg.senderName)}
                     {!isRoom && (isSender ? 'You' : receiverName)}
                   </p>
-                  { !isFile &&
-                  <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{msg.message}</p>}
+                  {!isFile &&
+                    <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{msg.message}</p>
+                  }
                   {
                     isFile && msg.message.slice(1) &&
                     <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${msg.message.slice(1)}`} alt={`${msg.message.slice(1)}`} />
@@ -422,8 +417,8 @@ const currentChatMessages = messages
                   <p className={`text-[10px] font-bold mb-1 uppercase tracking-wider ${isMe ? 'text-indigo-200' : 'text-gray-400'}`}>
                     {isMe ? 'You' : val.senderId}
                   </p>
-                  { !ifFile &&
-                  <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{val.messageText}</p>}
+                  {!ifFile &&
+                    <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{val.messageText}</p>}
                   {ifFile &&
                     <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${val.messageText.slice(1)}`} alt={`${val.messageText.slice(1)}`} />
                   }
@@ -447,13 +442,13 @@ const currentChatMessages = messages
         {/* Input Area */}
         <div className='p-4 md:p-6 bg-gray-900 border-t border-gray-800/50'>
           <form onSubmit={messageEmitter} className='flex gap-3 relative max-w-4xl mx-auto w-full'>
-            
+
             {/* 1. Hidden File Input */}
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileSelect} 
-              className="hidden" 
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              className="hidden"
             />
 
             {/* 2. File Select Button */}
@@ -473,7 +468,7 @@ const currentChatMessages = messages
               type='text'
               placeholder={`Message ${receiverName || '...'}`}
             />
-            
+
             <button
               type='submit'
               disabled={!message.trim() || !receiverName}
