@@ -36,14 +36,18 @@ const socketInit = (server, app) => {
       return res.status(400).json({ ok: false, msg: 'No file uploaded' });
     }
 
-    const { receiverName } = req.body;  
+    const { receiverName, Id, reciverId } = req.body;  
 
     const fileInfo = {
-      filename: req.file.filename,
+      filename: '$'+req.file.filename,
       originalname: req.file.originalname,
       size: req.file.size,
       path: `/uploads/${req.file.filename}`,
+      Id,
+      reciverId
     };
+
+    console.log("reciverID", reciverId, "receiverName", receiverName)
 
     io.to(receiverName).emit('file:uploaded', fileInfo);
 

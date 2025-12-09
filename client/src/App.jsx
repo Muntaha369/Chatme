@@ -110,9 +110,9 @@ const App = () => {
         const newString = tryVar.replace('esc','')
         console.log("This is the new one",newString)
         const newData = {
-          Id:data.Id,
+          Id:clientId, 
           message:newString,
-          reciverId:data.reciverId,
+          reciverId:data.reciverId, // need to pass reciverId to to the api
           senderName:data.senderName
         }
         console.log("NewData",newData)
@@ -149,6 +149,14 @@ const App = () => {
 
     const handleFlileUpload = (data) => {
       console.log("This is the Data", data);
+      const newMessage = {
+      Id: data.Id,
+      message: data.filename,
+      reciverId: data.reciverId, 
+      senderName: user
+    };
+      console.log("The newmessage",newMessage)
+      setMessages((...prev)=>[newMessage, ...prev])
     }
 
     socket.emit("send_username", { user, RoomList });
@@ -186,7 +194,8 @@ const App = () => {
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append("receiverName", socketID);
-
+    formData.append("Id",clientId)
+    formData.append("reciverId",socketID)
     try {
       const res = await axios.post(
         "http://localhost:3002/upload",
