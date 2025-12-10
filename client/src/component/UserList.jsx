@@ -69,6 +69,8 @@ const UserList = ({ socket, roomJoin }) => {
 
         const getContact = async () => {
             const email = localStorage.getItem('email');
+            console.log("This is email",email)
+            if(email && user){
             const res = await axios.post('http://localhost:3002/api/all/addContacts', { clientName: email, contacts: 'USUAL' })
             console.log("This is the ROOMS data", res.data.rooms)
 
@@ -83,13 +85,12 @@ const UserList = ({ socket, roomJoin }) => {
             socket.emit('Room_List', newRoomlist)
 
             roomlist.map((val) => setRoomList(val.roomname))
-            contactslist.map((val) => setContact(val))
+            contactslist.map((val) => setContact(val))}
 
         }
+        if(user){getContact()}
 
-        getContact()
-
-    }, [])
+    }, [user])
 
     useEffect(() => {
         console.log("now you can see my friend", roomInfo)
@@ -263,7 +264,7 @@ const UserList = ({ socket, roomJoin }) => {
                 </h2>
 
                 {/* --- Contacts List --- */}
-                {contact && contact.map((val, idx) => (
+                {contact && contact.map((val, idx) => (val != null||undefined)  && (
                     <motion.div
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -284,7 +285,8 @@ const UserList = ({ socket, roomJoin }) => {
                                 <div className="relative">
                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold
                     ${isRoomActive(val) ? 'bg-indigo-500 text-white' : 'bg-gray-700 text-gray-300 group-hover:bg-gray-600'}`}>
-                                        {val.charAt(0).toUpperCase()}
+                                        { val != undefined &&
+                                        val.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-gray-900 rounded-full" />
                                 </div>
