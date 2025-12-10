@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import UserList from './component/UserList';
-import { Menu, Send, Paperclip } from 'lucide-react'; 
+import { Menu, Send, Paperclip, FileText } from 'lucide-react'; 
 import { verifyToken } from './component/verify';
 import { useNavigate } from 'react-router-dom';
 import { multiSocket, useRoom, useOpen, useReciverId, useDataroom, useUser, useUserID, useReceiver } from './store/store';
@@ -179,9 +179,16 @@ const App = () => {
         }
       );
       
-      // FIX: Removed manual setMessages here to prevent duplication.
-      // The socket listener 'file:uploaded' will handle the UI update.
-      console.log("UPLOAD SUCCESS:", res.data.file.filename);
+      const newMessage = {
+        Id: res.data.file.Id,
+        message: res.data.file.filename,
+        reciverId: res.data.file.reciverId,
+        senderName: user,
+        textORfile: 'File'
+      };
+
+      setMessages((prev)=>[newMessage, ...prev])
+      console.log("UPLOAD SUCCESS:", res);
 
       const currentRecipient = socketID;
 
@@ -372,6 +379,7 @@ const App = () => {
             const isSender = msg.Id === clientId;
             const isRoom = msg.reciverId && (msg.reciverId.includes("+room") || msg.reciverId.includes("room"));
             const isFile = msg.textORfile.includes("File")
+            const isPdf = msg.message.endsWith(".pdf")
             return (
               <div
                 key={index}
@@ -391,8 +399,34 @@ const App = () => {
                     <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{msg.message}</p>
                   }
                   {
-                    isFile && msg.message.slice(1) &&
-                    <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${msg.message.slice(1)}`} alt={`${msg.message.slice(1)}`} />
+                    isFile &&<>
+                    {!isPdf &&
+                    <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${msg.message.slice(1)}`} alt={`${msg.message.slice(1)}`} />}
+                    {isPdf && 
+                      <div className="flex items-center gap-3 p-3 mt-1 bg-gray-900/50 border border-gray-700/50 rounded-xl max-w-full">
+                        {/* File Icon */}
+                        <div className="flex-shrink-0 p-2 bg-indigo-500/20 rounded-lg">
+                          <FileText size={24} className="text-indigo-400" />
+                        </div>
+
+                        {/* File Details & Link */}
+                        <div className="flex flex-col min-w-0">
+                          <a 
+                            href={`http://localhost:3002/uploads/${msg.message.slice(1)}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-indigo-300 hover:text-indigo-200 hover:underline truncate transition-colors"
+                            title="Click to open file"
+                          >
+                            {msg.message.slice(1)}
+                          </a>
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide">
+                            PDF Document
+                          </span>
+                        </div>
+                      </div>
+                    }
+                    </>
                   }
                 </div>
               </div>
@@ -403,6 +437,8 @@ const App = () => {
           {SyncedMessage.map((val, idx) => {
             const isMe = val.senderId === sender;
             const ifFile = val.messageText[0] === '$'
+            const isPdf = val.messageText.endsWith(".pdf")
+
             return (
               <div
                 key={`hist-${idx}`}
@@ -419,8 +455,35 @@ const App = () => {
                   </p>
                   {!ifFile &&
                     <p className='text-sm leading-relaxed break-words whitespace-pre-wrap'>{val.messageText}</p>}
-                  {ifFile &&
-                    <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${val.messageText.slice(1)}`} alt={`${val.messageText.slice(1)}`} />
+                  {ifFile && <>
+                    {  !isPdf &&
+                    <img className='max-h-[300px] rounded-lg' src={`http://localhost:3002/uploads/${val.messageText.slice(1)}`} alt={`${val.messageText.slice(1)}`} />}
+                    {
+                      isPdf &&
+                      <div className="flex items-center gap-3 p-3 mt-1 bg-gray-900/50 border border-gray-700/50 rounded-xl max-w-full">
+                        {/* File Icon */}
+                        <div className="flex-shrink-0 p-2 bg-indigo-500/20 rounded-lg">
+                          <FileText size={24} className="text-indigo-400" />
+                        </div>
+
+                        {/* File Details & Link */}
+                        <div className="flex flex-col min-w-0">
+                          <a 
+                            href={`http://localhost:3002/uploads/${val.messageText.slice(1)}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium text-indigo-300 hover:text-indigo-200 hover:underline truncate transition-colors"
+                            title="Click to open file"
+                          >
+                            {val.messageText.slice(1)}
+                          </a>
+                          <span className="text-[10px] text-gray-500 uppercase tracking-wide">
+                            PDF Document
+                          </span>
+                        </div>
+                      </div> 
+                    }
+                    </>
                   }
                 </div>
               </div>
