@@ -1,7 +1,6 @@
 const User = require('../models/model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {JWT_SECRET_KEY} = require('../keys/keys')
 const register = async (req, res) => {
     try {
         const { username, email, password, contacts, rooms } = req.body;
@@ -32,7 +31,7 @@ const register = async (req, res) => {
                 userId: UserCreated._id.toString(), 
                 email: UserCreated.email 
             },
-            JWT_SECRET_KEY,
+            process.env.JWT_SECRET_KEY,
             { expiresIn: '30d' }
         ); 
 
@@ -72,7 +71,7 @@ const login = async(req,res)=>{
                 userId: UserExist._id.toString(), 
                 email: UserExist.email 
             },
-            JWT_SECRET_KEY,
+            process.env.JWT_SECRET_KEY,
             { expiresIn: '30d' }
         );
  
@@ -98,7 +97,7 @@ const verify = async(req, res) => {
 
     try {
 
-        const decodedPayload = jwt.verify(token, JWT_SECRET_KEY);
+        const decodedPayload = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
 
         console.log("Token Verified Successfully:", decodedPayload);
