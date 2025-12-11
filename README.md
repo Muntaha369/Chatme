@@ -147,4 +147,6 @@ Feel free to open issues or pull requests. Keep front-end and back-end changes r
 
 ## License
 
-This project does not include a license file. Add one if you plan to publish or share the project.
+This project is released under the MIT License — see the `LICENSE` file for details.
+
+Badge: ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
