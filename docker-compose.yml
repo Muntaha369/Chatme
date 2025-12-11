@@ -5,12 +5,10 @@ services:
   server:
     build: ./server
     ports:
-      - "5000:5000"
+      - "3002:3002"
     environment:
-      - PORT=5000
-      # Use the service name "mongo"
-      - DB_URI=mongodb://mongo:27017/my_database
-    # CRITICAL: This waits for the healthcheck to pass before starting the server
+      - PORT=3002
+      - URI=mongodb://mongo:27017/my_database
     depends_on:
       mongo:
         condition: service_healthy
@@ -20,6 +18,9 @@ services:
     build: ./client
     ports:
       - "5173:5173"
+    environment:
+      # ADDED THIS LINE: Now your React code can access import.meta.env.VITE_SERVER_URL
+      - VITE_SERVER_URL=http://localhost:3002
     stdin_open: true
     tty: true
     depends_on:
@@ -32,13 +33,11 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-    # This checks if Mongo is actually accepting connections
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.runCommand({ping: 1})"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-# Persist data even if containers are destroyed
 volumes:
   mongo-data:

@@ -9,7 +9,8 @@ import axios from 'axios';
 import SlideAnimations from './component/Slider';
 
 // The socket connection should be established outside the component
-const socket = io.connect('http://localhost:3002');
+const socket_url = import.meta.env.VITE_SERVER_URL
+const socket = io.connect(socket_url);
 
 const App = () => {
 
