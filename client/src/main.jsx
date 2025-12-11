@@ -9,7 +9,7 @@ import LoadingPage from './Load.jsx';
 const router = createBrowserRouter([
     {path:"/", element:<App/>},
     {path:"/login", element: <LoginPage/>},
-    {path:"/signup", element: <SignupPage/>},
+    {path:"/register", element: <SignupPage/>},
     {path:"/loading", element: <LoadingPage/>}
 ]);
 
