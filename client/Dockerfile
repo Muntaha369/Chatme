@@ -1,17 +1,14 @@
-# Use Node alpine
-FROM node:18-alpine
+# OLD: FROM node:18-alpine
+# NEW:
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy source code
 COPY . .
 
-# Expose standard React port
 EXPOSE 5173
 
-# Start the dev server
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev", "--", "--host"]
