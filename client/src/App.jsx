@@ -191,7 +191,7 @@ const App = () => {
       setMessages((prev)=>[newMessage, ...prev])
       console.log("UPLOAD SUCCESS:", res);
 
-      const currentRecipient = socketID;
+      const currentRecipient = typeof socketID === 'object' ? socketID?.socketId : socketID;
 
       const isRoom = currentRecipient.includes('+room');
       const msgType = isRoom ? 'room' : 'private';
